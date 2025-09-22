@@ -1,47 +1,64 @@
 package com.example.umc_9th
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.umc_9th.ui.theme.UMC_9thTheme
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.redcaramel.umc_misson_2.databinding.ActivityMainBinding
 
-class MainActivity : ComponentActivity() {
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding : ActivityMainBinding
+    companion object {const val STRING_INTENT_KEY = "title"}
+    private val getResultText = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if(result.resultCode == RESULT_OK) {
+            val returnString = result.data?.getStringExtra(STRING_INTENT_KEY)
+            val toast = Toast.makeText(this, returnString, Toast.LENGTH_SHORT) // in Activity
+            toast.show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            UMC_9thTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, HomeFragment())
+            .commit()
+
+        binding.songButton.setOnClickListener {
+            val intent = Intent(this, SongActivity::class.java)
+            intent.putExtra("title", binding.miniTitle.text.toString())
+            intent.putExtra("singer", binding.miniSinger.text.toString())
+            getResultText.launch(intent)
+        }
+
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId){
+
+                //매인 화면
+                R.id.Home -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, HomeFragment())
+                        .commit()
+                    true
                 }
+
+                //일기 작성 화면
+                R.id.Locker -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, LockerFragment())
+                        .commit()
+                    true
+                }
+                else -> false
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UMC_9thTheme {
-        Greeting("Android")
     }
 }
