@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.gotoSong.setOnClickListener {
-            val title = binding.miniPlayerTitle.text.toString()
+            val title= binding.miniPlayerTitle.text.toString()
             val artist = binding.miniPlayerArtist.text.toString()
             val albumResId = binding.miniPlayerAlbum.tag as? Int
 
