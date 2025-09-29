@@ -1,47 +1,47 @@
 package com.example.umc_9th
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.umc_9th.ui.theme.UMC_9thTheme
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import umc.study.umc_8th.databinding.ActivityMainBinding
+import umc.study.umc_8th.R
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            UMC_9thTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.face1.setOnClickListener {
+            binding.explanation1.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
+            Toast.makeText(this, "행복 버튼을 클릭했습니다", Toast.LENGTH_LONG).show()
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        binding.face2.setOnClickListener {
+            binding.explanation2.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
+            Toast.makeText(this, "흥분 버튼을 클릭했습니다", Toast.LENGTH_LONG).show()
+        }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UMC_9thTheme {
-        Greeting("Android")
+        binding.face3.setOnClickListener {
+            binding.explanation3.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
+            Toast.makeText(this, "평범 버튼을 클릭했습니다", Toast.LENGTH_LONG).show()
+        }
+
+        binding.face4.setOnClickListener {
+            binding.explanation4.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
+            Toast.makeText(this, "생각 버튼을 클릭했습니다", Toast.LENGTH_LONG).show()
+        }
+
+        binding.face5.setOnClickListener {
+            binding.explanation5.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
+            Toast.makeText(this, "분노 버튼을 클릭했습니다", Toast.LENGTH_LONG).show()
+        }
     }
 }
