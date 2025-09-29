@@ -7,11 +7,20 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:text="앨범 이름"
+=======
+        android:text="상세정보 프레그먼트"
+>>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
         android:textSize="30sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
 </androidx.constraintlayout.widget.ConstraintLayout>

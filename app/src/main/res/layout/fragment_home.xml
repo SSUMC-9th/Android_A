@@ -276,6 +276,10 @@
                             android:textSize="13sp"
                             android:textColor="#a8a8a8"/>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="wrap_content"

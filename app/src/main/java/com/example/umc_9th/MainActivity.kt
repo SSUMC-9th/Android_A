@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 package com.example.umc_9th
+=======
+>>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle

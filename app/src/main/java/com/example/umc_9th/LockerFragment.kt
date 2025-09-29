@@ -20,4 +20,9 @@ class LockerFragment : Fragment() {
 
         return binding.root
     }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
 }
