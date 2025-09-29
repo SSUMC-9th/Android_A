@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/top_container_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_first_album_default" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/homeTopText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:text="달빛의 감성 산책"
+            android:textColor="@color/white"
+            android:layout_marginTop="70dp"
+            android:layout_marginLeft="20dp" />
+
+        <ImageButton
+            android:id="@+id/home_panel_play_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/btn_panel_play_large"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_gravity="end"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="30dp" />
+
+        <TextView
+            android:id="@+id/homeTopContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="총 10곡 2025.03.30"
+            android:textColor="@color/white"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="24dp" />
+
+        <LinearLayout
+            android:id="@+id/top_songs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="9dp"
+            android:layout_gravity="bottom" >
+
+            <LinearLayout
+                android:id="@+id/song1_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:layout_marginStart="10dp">
+
+                <ImageView
+                    android:id="@+id/song1_album"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/img_album_exp"
+                    android:background="@drawable/imageview_rounded_shape"
+                    android:clipToOutline="true" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="20dp">
+
+                    <TextView
+                        android:id="@+id/song1_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Butter"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"/>
+
+                    <TextView
+                        android:id="@+id/song1_artist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="방탄소년단"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"/>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/song2_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:layout_marginStart="10dp">
+
+                <ImageView
+                    android:id="@+id/song2_album"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/img_album_exp2"
+                    android:background="@drawable/imageview_rounded_shape"
+                    android:clipToOutline="true" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="20dp">
+
+                    <TextView
+                        android:id="@+id/song2_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="LILAC"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"/>
+
+                    <TextView
+                        android:id="@+id/song2_artist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="IU"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

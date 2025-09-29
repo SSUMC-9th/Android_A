@@ -5,65 +5,65 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayoutMediator
 import umc.study.umc_8th.R
-
+import umc.study.umc_8th.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
+
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        val mainActivity = activity as? MainActivity
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // song1
-        val song1Title = view.findViewById<TextView>(R.id.song1_title)
-        val song1Artist = view.findViewById<TextView>(R.id.song1_artist)
-        val song1Album = view.findViewById<ImageView>(R.id.song1_album)
-        val song1Layout = view.findViewById<LinearLayout>(R.id.song1_container)
+        val banners = listOf(
+            BannerData(
+                title = "달빛의 감성 산책",
+                songs = listOf(
+                    BannerSong("Butter", "방탄소년단", R.drawable.img_album_exp),
+                    BannerSong("LILAC", "IU", R.drawable.img_album_exp2)
+                )
+            ),
+            BannerData(
+                title = "새로운 감성",
+                songs = listOf(
+                    BannerSong("Next Level", "aespa", R.drawable.img_album_exp3)
+                )
+            ),
+            BannerData(
+                title = "추가 배너",
+                songs = listOf(
+                    BannerSong("Hype Boy", "뉴진스", R.drawable.img_album_exp)
+                )
+            )
 
-        song1Layout.setOnClickListener {
-            val intent = Intent(requireContext(), SongActivity::class.java)
-            intent.putExtra("title", song1Title.text.toString())
-            intent.putExtra("artist", song1Artist.text.toString())
-            intent.putExtra("albumResId", R.drawable.img_album_exp)
-            mainActivity?.songActivityLauncher?.launch(intent)
+        )
+
+        val adapter = HomeBannerAdapter(banners) { song ->
+            val intent = Intent(requireContext(), SongActivity::class.java).apply {
+                putExtra("title", song.title)
+                putExtra("artist", song.artist)
+                putExtra("albumResId", song.albumResId)
+            }
+            (activity as? MainActivity)?.songActivityLauncher?.launch(intent)
         }
 
-        // song2
-        val song2Title = view.findViewById<TextView>(R.id.song2_title)
-        val song2Artist = view.findViewById<TextView>(R.id.song2_artist)
-        val song2Album = view.findViewById<ImageView>(R.id.song2_album)
-        val song2Layout = view.findViewById<LinearLayout>(R.id.song2_container)
+        binding.homeTopBanner.adapter = adapter
+        binding.homeBannerIndicator.setViewPager2(binding.homeTopBanner)
+    }
 
-        song2Layout.setOnClickListener {
-            val intent = Intent(requireContext(), SongActivity::class.java)
-            intent.putExtra("title", song2Title.text.toString())
-            intent.putExtra("artist", song2Artist.text.toString())
-            intent.putExtra("albumResId", R.drawable.img_album_exp2)
-            mainActivity?.songActivityLauncher?.launch(intent)
-        }
-
-        // song3
-        val song3Title = view.findViewById<TextView>(R.id.song3_title)
-        val song3Artist = view.findViewById<TextView>(R.id.song3_artist)
-        val song3Album = view.findViewById<ImageView>(R.id.song3_album)
-        val song3Layout = view.findViewById<LinearLayout>(R.id.song3_container)
-
-        song3Layout.setOnClickListener {
-            val intent = Intent(requireContext(), SongActivity::class.java)
-            intent.putExtra("title", song3Title.text.toString())
-            intent.putExtra("artist", song3Artist.text.toString())
-            intent.putExtra("albumResId", R.drawable.img_album_exp3)
-            mainActivity?.songActivityLauncher?.launch(intent)
-        }
-
-        return view
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
