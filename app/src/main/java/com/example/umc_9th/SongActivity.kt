@@ -1,12 +1,10 @@
-package com.redcaramel.umc_misson_2
+package com.example.umc_9th
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.redcaramel.umc_misson_2.databinding.ActivitySongBinding
+import umc.study.umc_9th.databinding.ActivitySongBinding
 
 class SongActivity : AppCompatActivity() {
     private lateinit var binding : ActivitySongBinding

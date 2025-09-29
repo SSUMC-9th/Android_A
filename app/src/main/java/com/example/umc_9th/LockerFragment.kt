@@ -1,11 +1,11 @@
-package com.redcaramel.umc_misson_2
+package com.example.umc_9th
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.redcaramel.umc_misson_2.databinding.FragmentLockerBinding
+import umc.study.umc_9th.databinding.FragmentLockerBinding
 
 class LockerFragment : Fragment() {
     private lateinit var binding : FragmentLockerBinding

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.example.umc_9th.MainActivity">
 
     <FrameLayout
         android:id="@+id/container"
@@ -20,7 +20,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
-            android:name="com.redcaramel.umc_misson_2.HomeFragment"
+            android:name="com.example.umc_9th.HomeFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout="@layout/fragment_home" />

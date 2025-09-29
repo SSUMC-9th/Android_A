@@ -6,7 +6,8 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.redcaramel.umc_misson_2.databinding.ActivityMainBinding
+import umc.study.umc_9th.R
+import umc.study.umc_9th.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
