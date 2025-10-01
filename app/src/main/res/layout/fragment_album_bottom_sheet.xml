@@ -7,7 +7,7 @@
     android:background="@color/white">
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
+        android:id="@+id/album_tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabIndicatorColor="@color/purple_500"
@@ -15,7 +15,7 @@
         app:tabTextColor="@android:color/darker_gray" />
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager"
+        android:id="@+id/album_viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>

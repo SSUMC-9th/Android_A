@@ -69,8 +69,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:dotsColor="@color/purple_500"
-        app:dotsStrokeColor="@color/purple_500"
+        app:dotsColor="@color/purple_700"
+        app:dotsStrokeColor="@color/light_gray"
         app:dotsSize="8dp"
         app:dotsSpacing="6dp"
         app:selectedDotColor="@color/purple_500"
@@ -152,7 +152,7 @@
         app:layout_constraintStart_toStartOf="parent" >
 
         <LinearLayout
-            android:id="@+id/song3_container"
+            android:id="@+id/recyclerView_album1_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -160,14 +160,14 @@
             android:layout_marginStart="8dp" >
 
             <ImageView
-                android:id="@+id/song3_album"
+                android:id="@+id/recyclerView_album1"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/img_album_exp3"
                 android:layout_marginBottom="10dp"/>
 
             <TextView
-                android:id="@+id/song3_title"
+                android:id="@+id/recyclerView_album1_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Next Level"
@@ -175,7 +175,7 @@
                 android:textSize="12sp"/>
 
             <TextView
-                android:id="@+id/song3_artist"
+                android:id="@+id/recyclerView_album1_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="aespa"

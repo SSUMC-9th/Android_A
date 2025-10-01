@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottom_homeButton -> HomeFragment()
                 R.id.bottom_lookButton -> ExploreFragment()
                 R.id.bottom_searchButton -> SearchFragment()
-                R.id.bottom_lockerButton -> LibraryFragment()
+                R.id.bottom_lockerButton -> LockerFragment()
                 else -> HomeFragment()
             }
 

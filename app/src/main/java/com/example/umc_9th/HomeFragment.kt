@@ -29,24 +29,29 @@ class HomeFragment : Fragment() {
         val banners = listOf(
             BannerData(
                 title = "달빛의 감성 산책",
+                content = "총 10곡 2025.03.30",
                 songs = listOf(
-                    BannerSong("Butter", "방탄소년단", R.drawable.img_album_exp),
+                    BannerSong("Butter", "BTS", R.drawable.img_album_exp),
                     BannerSong("LILAC", "IU", R.drawable.img_album_exp2)
                 )
             ),
             BannerData(
-                title = "새로운 감성",
+                title = "힐링을 위한 감성",
+                content = "총 7곡 2025.03.30",
                 songs = listOf(
-                    BannerSong("Next Level", "aespa", R.drawable.img_album_exp3)
+                    BannerSong("Weekend", "태연", R.drawable.img_album_exp6),
+                    BannerSong("Love wins all", "IU", R.drawable.img_album_lovewinsall)
                 )
             ),
             BannerData(
-                title = "추가 배너",
+                title = "운동할 때 듣는 음악",
+                content = "총 8곡 2025.03.30",
                 songs = listOf(
-                    BannerSong("Hype Boy", "뉴진스", R.drawable.img_album_exp)
+
+                    BannerSong("해야(Heya)", "IVE", R.drawable.img_album_heya),
+                    BannerSong("supernova", "aespa", R.drawable.img_album_supernova),
                 )
             )
-
         )
 
         val adapter = HomeBannerAdapter(banners) { song ->
@@ -60,6 +65,16 @@ class HomeFragment : Fragment() {
 
         binding.homeTopBanner.adapter = adapter
         binding.homeBannerIndicator.setViewPager2(binding.homeTopBanner)
+
+        binding.recyclerViewAlbum1Container.setOnClickListener {
+            val intent = Intent(requireContext(), SongActivity::class.java).apply {
+                putExtra("title", binding.recyclerViewAlbum1Title.text.toString())
+                putExtra("artist", binding.recyclerViewAlbum1Artist.text.toString())
+                putExtra("albumResId", R.drawable.img_album_exp3)
+            }
+            (activity as? MainActivity)?.songActivityLauncher?.launch(intent)
+        }
+
     }
 
     override fun onDestroyView() {

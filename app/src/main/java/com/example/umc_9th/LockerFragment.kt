@@ -13,8 +13,8 @@ class LockerFragment : Fragment(R.layout.fragment_locker) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tabLayout = view.findViewById<TabLayout>(R.id.locker_tab_layout)
-        val viewPager = view.findViewById<ViewPager2>(R.id.locker_viewpager)
+        val tabLayout = view.findViewById<TabLayout>(R.id.locker_tabLayout)
+        val viewPager = view.findViewById<ViewPager2>(R.id.locker_viewPager)
 
         val adapter = LockerPagerAdapter(this)
         viewPager.adapter = adapter

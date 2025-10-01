@@ -22,8 +22,8 @@ class AlbumBottomSheetFragment : com.google.android.material.bottomsheet.BottomS
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val viewPager = view.findViewById<ViewPager2>(R.id.view_pager)
-        val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
+        val viewPager = view.findViewById<ViewPager2>(R.id.album_viewPager)
+        val tabLayout = view.findViewById<TabLayout>(R.id.album_tabLayout)
 
         viewPager.adapter = SongPagerAdapter(requireActivity())
 

@@ -7,15 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import umc.study.umc_8th.R
 
 class MusicFileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val tv = TextView(requireContext())
-        tv.text = "음악파일 화면"
-        tv.gravity = Gravity.CENTER
-        return tv
+        return inflater.inflate(R.layout.fragment_music_file, container, false)
     }
 }
+
