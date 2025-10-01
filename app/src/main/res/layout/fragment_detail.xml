@@ -6,7 +6,7 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/album_name"
+        android:id="@+id/detail_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="앨범 이름"
@@ -15,7 +15,7 @@
         android:layout_marginBottom="8dp"/>
 
     <TextView
-        android:id="@+id/composer_name"
+        android:id="@+id/detail_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="작곡가 이름"

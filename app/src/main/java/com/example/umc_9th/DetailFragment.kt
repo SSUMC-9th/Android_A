@@ -14,14 +14,19 @@ class DetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_detail, container, false)
+        return inflater.inflate(R.layout.fragment_detail, container, false)
+    }
 
-        val albumName = view.findViewById<TextView>(R.id.album_name)
-        val composerName = view.findViewById<TextView>(R.id.composer_name)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        albumName.text = "앨범 이름 : My Album"
-        composerName.text = "작곡가 : 홍길동"
+        val title = arguments?.getString("title") ?: "제목 없음"
+        val artist = arguments?.getString("artist") ?: "가수 없음"
 
-        return view
+        val albumTitle = view.findViewById<TextView>(R.id.detail_title)
+        val albumArtist = view.findViewById<TextView>(R.id.detail_artist)
+
+        albumTitle.text = title
+        albumArtist.text = artist
     }
 }

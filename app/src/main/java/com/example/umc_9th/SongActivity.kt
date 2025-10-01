@@ -56,12 +56,6 @@ class SongActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<ImageView>(R.id.song_album_image).setOnClickListener {
-            val bottomSheet = AlbumBottomSheetFragment()
-            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
-        }
-
-
     }
 }
 

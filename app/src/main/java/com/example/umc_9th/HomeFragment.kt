@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
 import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.FragmentHomeBinding
@@ -54,27 +55,47 @@ class HomeFragment : Fragment() {
             )
         )
 
-        val adapter = HomeBannerAdapter(banners) { song ->
-            val intent = Intent(requireContext(), SongActivity::class.java).apply {
-                putExtra("title", song.title)
-                putExtra("artist", song.artist)
-                putExtra("albumResId", song.albumResId)
+        val bannerAdapter = HomeBannerAdapter(banners) { song ->
+            val albumFragment = AlbumFragment().apply {
+                arguments = Bundle().apply {
+                    putString("title", song.title)
+                    putString("artist", song.artist)
+                    putInt("albumResId", song.albumResId)
+                }
             }
-            (activity as? MainActivity)?.songActivityLauncher?.launch(intent)
-        }
 
-        binding.homeTopBanner.adapter = adapter
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, albumFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        binding.homeTopBanner.adapter = bannerAdapter
         binding.homeBannerIndicator.setViewPager2(binding.homeTopBanner)
 
-        binding.recyclerViewAlbum1Container.setOnClickListener {
-            val intent = Intent(requireContext(), SongActivity::class.java).apply {
-                putExtra("title", binding.recyclerViewAlbum1Title.text.toString())
-                putExtra("artist", binding.recyclerViewAlbum1Artist.text.toString())
-                putExtra("albumResId", R.drawable.img_album_exp3)
+        val albums = listOf(
+            Album("Next Level", "aespa", R.drawable.img_album_exp3),
+            Album("해야 (Heya)", "IVE", R.drawable.img_album_heya),
+            Album("Supernova", "aespa", R.drawable.img_album_supernova)
+        )
+
+        val recyclerViewAdapter = HomeAlbumAdapter(albums) { album ->
+            val albumFragment = AlbumFragment().apply {
+                arguments = Bundle().apply {
+                    putString("title", album.title)
+                    putString("artist", album.artist)
+                    putInt("albumResId", album.albumResId)
+                }
             }
-            (activity as? MainActivity)?.songActivityLauncher?.launch(intent)
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, albumFragment)
+                .addToBackStack(null)
+                .commit()
         }
 
+        binding.recyclerViewAlbum.adapter = recyclerViewAdapter
+        binding.recyclerViewAlbum.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
     override fun onDestroyView() {
