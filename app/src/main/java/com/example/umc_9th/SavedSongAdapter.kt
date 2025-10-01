@@ -16,9 +16,8 @@ data class SavedSong(
 )
 
 class SavedSongAdapter(
-    private val items: List<SavedSong>,
-    private val onPlayClick: (SavedSong) -> Unit,
-    private val onMoreClick: (SavedSong) -> Unit
+    private val items: MutableList<SavedSong>,
+    private val onPlayClick: (SavedSong) -> Unit
 ) : RecyclerView.Adapter<SavedSongAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -42,7 +41,14 @@ class SavedSongAdapter(
         holder.artist.text = song.artist
 
         holder.playButton.setOnClickListener { onPlayClick(song) }
-        holder.moreButton.setOnClickListener { onMoreClick(song) }
+
+        holder.moreButton.setOnClickListener {
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                items.removeAt(pos)
+                notifyItemRemoved(pos)
+            }
+        }
     }
 
     override fun getItemCount(): Int = items.size

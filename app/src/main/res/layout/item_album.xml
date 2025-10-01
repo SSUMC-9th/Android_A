@@ -5,12 +5,29 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/recyclerView_album"
+    <FrameLayout
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/img_album_exp3"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp">
+
+        <ImageView
+            android:id="@+id/recyclerView_album"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_album_exp3" />
+
+        <ImageButton
+            android:id="@+id/album_play_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom|end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/widget_black_play"
+            android:scaleType="centerCrop"
+            android:contentDescription="Play"
+            android:padding="4dp"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/recyclerView_album_title"

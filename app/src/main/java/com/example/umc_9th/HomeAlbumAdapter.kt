@@ -3,6 +3,7 @@ package com.example.umc_9th
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,22 +17,24 @@ data class Album(
 
 class HomeAlbumAdapter(
     private val items: List<Album>,
-    private val onAlbumClick: (Album) -> Unit
-) : RecyclerView.Adapter<HomeAlbumAdapter.HomeAlbumViewHolder>() {
+    private val onAlbumClick: (Album) -> Unit,
+    private val onPlayClick: (Album) -> Unit
+) : RecyclerView.Adapter<HomeAlbumAdapter.AlbumViewHolder>() {
 
-    inner class HomeAlbumViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class AlbumViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image: ImageView = view.findViewById(R.id.recyclerView_album)
         val title: TextView = view.findViewById(R.id.recyclerView_album_title)
         val artist: TextView = view.findViewById(R.id.recyclerView_album_artist)
+        val playButton: ImageButton = view.findViewById(R.id.album_play_button)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeAlbumViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_album, parent, false)
-        return HomeAlbumViewHolder(view)
+        return AlbumViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: HomeAlbumViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AlbumViewHolder, position: Int) {
         val album = items[position]
         holder.image.setImageResource(album.albumResId)
         holder.title.text = album.title
@@ -39,6 +42,9 @@ class HomeAlbumAdapter(
 
         holder.itemView.setOnClickListener {
             onAlbumClick(album)
+        }
+        holder.playButton.setOnClickListener {
+            onPlayClick(album)
         }
     }
 

@@ -78,7 +78,8 @@ class HomeFragment : Fragment() {
             Album("Supernova", "aespa", R.drawable.img_album_supernova)
         )
 
-        val recyclerViewAdapter = HomeAlbumAdapter(albums) { album ->
+        val recyclerViewAdapter = HomeAlbumAdapter(albums,
+            onAlbumClick = { album ->
             val albumFragment = AlbumFragment().apply {
                 arguments = Bundle().apply {
                     putString("title", album.title)
@@ -91,11 +92,20 @@ class HomeFragment : Fragment() {
                 .replace(R.id.container, albumFragment)
                 .addToBackStack(null)
                 .commit()
-        }
+        },
+            onPlayClick = { album ->
+                (activity as? MainActivity)?.updateMiniPlayer(
+                    album.title,
+                    album.artist,
+                    album.albumResId
+                )
+            }
+        )
 
         binding.recyclerViewAlbum.adapter = recyclerViewAdapter
         binding.recyclerViewAlbum.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
     }
 
     override fun onDestroyView() {

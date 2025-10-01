@@ -25,7 +25,7 @@ class SavedSongFragment : Fragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView_saved_songs)
 
-        val savedSongs = listOf(
+        val savedSongs = mutableListOf(
             SavedSong(R.drawable.img_album_exp, "Butter", "BTS"),
             SavedSong(R.drawable.img_album_exp2, "LILAC", "IU"),
             SavedSong(R.drawable.img_album_lovewinsall, "Love wins all", "IU"),
@@ -36,9 +36,6 @@ class SavedSongFragment : Fragment() {
             savedSongs,
             onPlayClick = { song ->
                 // TODO: 재생 로직 추가
-            },
-            onMoreClick = { song ->
-                // TODO: 메뉴 로직 추가
             }
         )
 

@@ -83,4 +83,10 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    fun updateMiniPlayer(title: String, artist: String, albumResId: Int) {
+        binding.miniPlayerTitle.text = title
+        binding.miniPlayerArtist.text = artist
+        binding.miniPlayerAlbum.setImageResource(albumResId)
+    }
 }
