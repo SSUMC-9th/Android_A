@@ -5,9 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayoutMediator
+import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.FragmentLockerBinding
 
 class LockerFragment : Fragment() {
+
+    private val information = arrayListOf("저장한 곡", "음악파일", "저장앨범")
+
+    private var savedSongData = ArrayList<SavedSong>()
 
     lateinit var binding: FragmentLockerBinding
 
@@ -18,11 +24,15 @@ class LockerFragment : Fragment() {
     ): View? {
         binding = FragmentLockerBinding.inflate(inflater, container, false)
 
+        val lockerAdapter = LockerVPAdapter(this)
+        binding.lockerContentVp.adapter = lockerAdapter
+
+        TabLayoutMediator(binding.lockerContentTb, binding.lockerContentVp) { tab, position ->
+            tab.text = information[position]
+        }.attach()
+
         return binding.root
     }
-<<<<<<< HEAD
-=======
 
-
->>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
 }
+

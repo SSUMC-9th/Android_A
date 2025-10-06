@@ -1,10 +1,9 @@
-<<<<<<< HEAD
 package com.example.umc_9th
-=======
->>>>>>> d9dd34867324d324b187161bdab2c8e74fec83eb
+
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -35,22 +34,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 초기 화면으로 HomeFragment 설정
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, HomeFragment())
+            .commitAllowingStateLoss()
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.main_frm) as NavHostFragment
         val navController = navHostFragment.navController
 
         binding.mainBnv.setupWithNavController(navController)
 
-        val song = Song(
-            binding.mainMiniplayerTitleTv.text.toString(),
-            binding.mainMiniplayerSingerTv.text.toString()
-        )
-
-        binding.mainPlayerCl.setOnClickListener {
-            val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra("title", song.title)
-            intent.putExtra("singer", song.singer)
-            songActivityLauncher.launch(intent) // ✅ 결과를 받기 위해 launch
-        }
     }
+    // ✅ 미니플레이어 업데이트 함수
+    fun updateMiniPlayer(album: Album) {
+        binding.mainMiniplayerTitleTv.text = album.title
+        binding.mainMiniplayerSingerTv.text = album.singer
+    }
+
 }

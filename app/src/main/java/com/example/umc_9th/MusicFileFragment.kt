@@ -5,18 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import umc.study.umc_8th.databinding.FragmentBannerBinding
+import umc.study.umc_8th.databinding.FragmentMusicFileBinding
 
-class BannerFragment(val imgRes : Int) : Fragment() {
-    lateinit var binding : FragmentBannerBinding
+class MusicFileFragment : Fragment() {
+    lateinit var binding: FragmentMusicFileBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentBannerBinding.inflate(inflater, container, false)
-        binding.bannerImageIv.setImageResource(imgRes)
+        binding = FragmentMusicFileBinding.inflate(inflater, container, false)
 
         return binding.root
     }

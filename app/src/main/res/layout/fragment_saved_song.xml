@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+        <ImageView
+            android:id="@+id/btn_select_all"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/btn_playlist_select_off"
+            android:layout_marginStart="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_select_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전체 선택"
+            android:textColor="#a8a8a8"
+            android:textSize="15dp"
+            app:layout_constraintStart_toEndOf="@id/btn_select_all"
+            app:layout_constraintBottom_toBottomOf="@id/btn_select_all"
+            app:layout_constraintTop_toTopOf="@id/btn_select_all"/>
+
+        <ImageView
+            android:id="@+id/btn_play_all"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+            android:src="@drawable/btn_player_play"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toEndOf="@id/tv_select_all"
+            app:layout_constraintTop_toTopOf="@id/btn_select_all"
+            app:layout_constraintBottom_toBottomOf="@id/btn_select_all" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전체 듣기"
+            android:textColor="#a8a8a8"
+            android:textSize="15dp"
+            app:layout_constraintStart_toEndOf="@id/btn_play_all"
+            app:layout_constraintBottom_toBottomOf="@id/btn_play_all"
+            app:layout_constraintTop_toTopOf="@id/btn_play_all"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/locker_saved_songs_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/btn_select_all"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:listitem="@layout/item_saved_song"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
