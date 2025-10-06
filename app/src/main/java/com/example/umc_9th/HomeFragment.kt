@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager2.widget.ViewPager2
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.FragmentHomeBinding
 
@@ -28,6 +29,12 @@ class HomeFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        val bannerAdapter = BannerMusicVPAdapter(this)
+        bannerAdapter.addFragment(HomeBannerFragment(R.drawable.img_first_album_default))
+        bannerAdapter.addFragment(HomeBannerFragment(R.drawable.img_second_album_default))
+        binding.homeMusicBanner.adapter = bannerAdapter
+        binding.homeMusicBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         return binding.root
 

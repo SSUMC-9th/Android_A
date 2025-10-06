@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.FragmentAlbumBinding
 
@@ -26,6 +28,18 @@ class AlbumFragment : Fragment() {
                 .replace(R.id.fragmentContainerView, HomeFragment())
                 .commit()
         }
+        val contentAdapter = AlbumContentVPAdapter(this)
+        binding.albumContentVP.adapter = contentAdapter
+        binding.albumContentVP.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        TabLayoutMediator(binding.albumContentTB, binding.albumContentVP) {tab, position ->
+            tab.text = when(position) {
+                0 -> "수록곡"
+                1 -> "상세정보"
+                2 -> "영상"
+                else -> ""
+            }
+        }.attach()
+
         return binding.root
     }
 

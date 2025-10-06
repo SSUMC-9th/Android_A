@@ -65,7 +65,7 @@
         app:layout_constraintGuide_percent="0.55" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -73,12 +73,12 @@
         android:text="Love wins all"
         android:textColor="#000000"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView12"
+        app:layout_constraintBottom_toTopOf="@+id/singerText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/singerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -171,7 +171,7 @@
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
     <ImageView
-        android:id="@+id/imageView15"
+        android:id="@+id/playButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="36dp"
@@ -185,7 +185,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="32dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView15"
+        app:layout_constraintStart_toEndOf="@+id/playButton"
         app:layout_constraintTop_toBottomOf="@+id/progressBar"
         app:srcCompat="@drawable/btn_miniplayer_next" />
 
@@ -195,12 +195,12 @@
         android:layout_height="60dp"
         android:layout_marginTop="32dp"
         android:rotation="180"
-        app:layout_constraintEnd_toStartOf="@+id/imageView15"
+        app:layout_constraintEnd_toStartOf="@+id/playButton"
         app:layout_constraintTop_toBottomOf="@+id/progressBar"
         app:srcCompat="@drawable/btn_miniplayer_next" />
 
     <ImageView
-        android:id="@+id/imageView18"
+        android:id="@+id/suffleButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="40dp"
@@ -210,7 +210,7 @@
         app:srcCompat="@drawable/nugu_btn_random_inactive" />
 
     <ImageView
-        android:id="@+id/imageView19"
+        android:id="@+id/repeatButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="42dp"
