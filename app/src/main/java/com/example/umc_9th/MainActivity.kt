@@ -10,7 +10,7 @@ import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.ActivityMainBinding
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), HomeFragment.OnAlbumButtonClickListener {
     private lateinit var binding : ActivityMainBinding
     companion object {const val STRING_INTENT_KEY = "title"}
     private val getResultText = registerForActivityResult(
@@ -61,5 +61,9 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+    override fun onAlbumButtonClicked(title : String, singer: String) {
+        binding.miniTitle.text = title
+        binding.miniSinger.text = singer
     }
 }
