@@ -55,149 +55,28 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/top_container_background"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/home_top_banner"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_first_album_default"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/middle_guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/homeTopText"
+    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+        android:id="@+id/home_banner_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:text="달빛의 감성 산책"
-        android:textColor="@color/white"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        app:dotsColor="@color/purple_700"
+        app:dotsStrokeColor="@color/light_gray"
+        app:dotsSize="8dp"
+        app:dotsSpacing="6dp"
+        app:selectedDotColor="@color/purple_500"
+        app:layout_constraintTop_toBottomOf="@id/home_top_banner"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/home_topBar" />
-
-    <ImageButton
-        android:id="@+id/home_panel_play_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/btn_panel_play_large"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:layout_gravity="end"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/homeTopText" />
-
-    <TextView
-        android:id="@+id/homeTopContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:text="총 10곡 2025.03.30"
-        android:textColor="@color/white"
-        android:layout_marginTop="0dp"
-        android:layout_marginLeft="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/home_panel_play_button" />
-
-    <LinearLayout
-        android:id="@+id/top_songs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="9dp"
-        android:layout_gravity="bottom"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/homeTopContent" >
-
-        <LinearLayout
-            android:id="@+id/song1_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:layout_marginStart="10dp">
-
-            <ImageView
-                android:id="@+id/song1_album"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/img_album_exp"
-                android:background="@drawable/imageview_rounded_shape"
-                android:clipToOutline="true" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-
-                android:gravity="center_vertical"
-                android:layout_marginStart="20dp">
-
-                <TextView
-                    android:id="@+id/song1_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Butter"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"/>
-
-                <TextView
-                    android:id="@+id/song1_artist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="방탄소년단"
-                    android:textSize="12sp"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/song2_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:layout_marginStart="10dp">
-
-            <ImageView
-                android:id="@+id/song2_album"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/img_album_exp2"
-                android:background="@drawable/imageview_rounded_shape"
-                android:clipToOutline="true" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center_vertical"
-                android:layout_marginStart="20dp">
-
-                <TextView
-                    android:id="@+id/song2_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="LILAC"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"/>
-
-                <TextView
-                    android:id="@+id/song2_artist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="IU"
-                    android:textSize="12sp"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <LinearLayout
         android:id="@+id/todayMusic_button"
@@ -262,51 +141,16 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_album"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginStart="5dp"
         app:layout_constraintTop_toBottomOf="@id/todayMusic_button"
-        app:layout_constraintStart_toStartOf="parent" >
-
-        <LinearLayout
-            android:id="@+id/song3_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="8dp" >
-
-            <ImageView
-                android:id="@+id/song3_album"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/img_album_exp3"
-                android:layout_marginBottom="10dp"/>
-
-            <TextView
-                android:id="@+id/song3_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Next Level"
-                android:textStyle="bold"
-                android:textSize="12sp"/>
-
-            <TextView
-                android:id="@+id/song3_artist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="aespa"
-                android:textSize="12sp"
-                android:layout_marginBottom="10dp"/>
-
-
-
-        </LinearLayout>
-    </LinearLayout>
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

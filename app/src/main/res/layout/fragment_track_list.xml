@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/mix_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_gravity="center"
+        android:padding="12dp"
+        android:background="@drawable/button_gray_rounded_shape"
+        android:drawableEnd="@drawable/btn_toggle_off_resized"
+        android:text="내 취향 MIX" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_tracks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

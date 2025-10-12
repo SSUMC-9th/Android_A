@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/savedSong_album"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/img_album_exp"
+        android:layout_marginEnd="16dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/savedSong_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="곡 제목"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/savedSong_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="가수"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/savedSong_btn_play"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/btn_player_play" />
+
+    <ImageButton
+        android:id="@+id/savedSong_btn_more"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/btn_player_more" />
+
+</LinearLayout>

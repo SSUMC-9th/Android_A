@@ -11,9 +11,34 @@ import androidx.appcompat.app.AppCompatActivity
 import umc.study.umc_8th.R
 
 class SongActivity : AppCompatActivity() {
+    private var isRepeatOn = false
+    private var isShuffleOn = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_song)
+
+        val repeatBtn = findViewById<ImageButton>(R.id.btn_repeat)
+        val shuffleBtn = findViewById<ImageButton>(R.id.btn_shuffle)
+
+        // 반복 버튼 클릭 이벤트
+        repeatBtn.setOnClickListener {
+            isRepeatOn = !isRepeatOn
+            if (isRepeatOn) {
+                repeatBtn.setImageResource(R.drawable.nugu_btn_down)
+            } else {
+                repeatBtn.setImageResource(R.drawable.nugu_btn_repeat_inactive)
+            }
+        }
+
+        // 전체재생(셔플) 버튼 클릭 이벤트
+        shuffleBtn.setOnClickListener {
+            isShuffleOn = !isShuffleOn
+            if (isShuffleOn) {
+                shuffleBtn.setImageResource(R.drawable.nugu_btn_down)
+            } else {
+                shuffleBtn.setImageResource(R.drawable.nugu_btn_random_inactive)
+            }
+        }
 
         val title = intent.getStringExtra("title")
         val artist = intent.getStringExtra("artist")
