@@ -9,15 +9,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import umc.study.umc_8th.R
 
-data class SavedSong(
+data class SavedAlbum(
     val album: Int,
     val title: String,
     val artist: String
 )
 
-class SavedSongAdapter(
-    private val items: MutableList<SavedSong>,
-) : RecyclerView.Adapter<SavedSongAdapter.SongViewHolder>() {
+class SavedAlbumAdapter(
+    private val items: MutableList<SavedAlbum>,
+) : RecyclerView.Adapter<SavedAlbumAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val album: ImageView = view.findViewById(R.id.savedSong_album)

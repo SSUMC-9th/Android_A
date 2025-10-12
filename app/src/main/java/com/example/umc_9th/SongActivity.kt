@@ -13,20 +13,22 @@ import umc.study.umc_8th.R
 class SongActivity : AppCompatActivity() {
     private var isRepeatOn = false
     private var isShuffleOn = false
+    private var isPlayOn = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_song)
 
         val repeatBtn = findViewById<ImageButton>(R.id.btn_repeat)
         val shuffleBtn = findViewById<ImageButton>(R.id.btn_shuffle)
+        val playBtn = findViewById<ImageButton>(R.id.btn_play)
 
         // 반복 버튼 클릭 이벤트
         repeatBtn.setOnClickListener {
             isRepeatOn = !isRepeatOn
             if (isRepeatOn) {
-                repeatBtn.setImageResource(R.drawable.nugu_btn_down)
+                repeatBtn.setImageResource(R.drawable.custom_refresh_black)
             } else {
-                repeatBtn.setImageResource(R.drawable.nugu_btn_repeat_inactive)
+                repeatBtn.setImageResource(R.drawable.custom_refresh_gray)
             }
         }
 
@@ -34,11 +36,23 @@ class SongActivity : AppCompatActivity() {
         shuffleBtn.setOnClickListener {
             isShuffleOn = !isShuffleOn
             if (isShuffleOn) {
-                shuffleBtn.setImageResource(R.drawable.nugu_btn_down)
+                shuffleBtn.setImageResource(R.drawable.custom_arrows_shuffle_black)
             } else {
-                shuffleBtn.setImageResource(R.drawable.nugu_btn_random_inactive)
+                shuffleBtn.setImageResource(R.drawable.custom_arrows_shuffle_gray)
             }
         }
+
+        // 재생 버튼 클릭 이벤트
+        playBtn.setOnClickListener {
+            isPlayOn = !isPlayOn
+            if (isPlayOn) {
+                playBtn.setImageResource(R.drawable.nugu_btn_pause_32)
+            } else {
+                playBtn.setImageResource(R.drawable.nugu_btn_play_32)
+            }
+        }
+
+
 
         val title = intent.getStringExtra("title")
         val artist = intent.getStringExtra("artist")

@@ -88,5 +88,6 @@ class MainActivity : AppCompatActivity() {
         binding.miniPlayerTitle.text = title
         binding.miniPlayerArtist.text = artist
         binding.miniPlayerAlbum.setImageResource(albumResId)
+        binding.miniPlayerAlbum.tag = albumResId
     }
 }

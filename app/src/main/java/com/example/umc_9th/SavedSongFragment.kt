@@ -32,14 +32,10 @@ class SavedSongFragment : Fragment() {
             SavedSong(R.drawable.img_album_exp3, "Next Level", "aespa")
         )
 
-        val adapter = SavedSongAdapter(
-            savedSongs,
-            onPlayClick = { song ->
-                // TODO: 재생 로직 추가
-            }
-        )
-
+        val adapter = SavedSongAdapter(savedSongs)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+
     }
 }
+
