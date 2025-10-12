@@ -20,7 +20,9 @@
         <service
             android:name="com.example.umc_9th.MusicService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback" >
+        </service>
 
         <activity
             android:name="com.example.umc_9th.MainActivity"
