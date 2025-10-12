@@ -23,7 +23,7 @@ class AlbumRVAdapter(
         albumList.add(album)
         notifyDataSetChanged()
     }
-
+//
     fun removeItem(position: Int){
         albumList.removeAt(position)
         notifyDataSetChanged()
@@ -57,7 +57,7 @@ class AlbumRVAdapter(
             binding.root.setOnClickListener {
                 mItemClickListener.onItemClick(album)
             }
-            // ✅ 플레이 버튼 클릭 시 콜백 호출
+            // 플레이 버튼 클릭 시 콜백 호출
             binding.itemAlbumPlayImgIv.setOnClickListener {
                 onPlayClick(album)
             }

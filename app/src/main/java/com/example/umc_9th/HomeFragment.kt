@@ -51,6 +51,11 @@ class HomeFragment : Fragment() {
                 albumRVAdapter.removeItem(position)
             }
         })
+        val mainBannerAdapter = BannerVPAdapter(this)
+        mainBannerAdapter.addFragment(BannerFragment(R.drawable.img_first_album_default))
+        mainBannerAdapter.addFragment(BannerFragment(R.drawable.img_album_supernova))
+        binding.homeMainBannerVp.adapter = mainBannerAdapter
+        binding.homeMainBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         // 배너어댑터
         val bannerAdapter = BannerVPAdapter(this)

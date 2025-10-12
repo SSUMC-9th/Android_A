@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="take care"
+            android:text="LILAC"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="drake"
+            android:text="아이유 (IU)"
             android:textColor="@color/black"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="@+id/song_music_title_tv"
@@ -94,11 +94,11 @@
 
         <ImageView
             android:id="@+id/song_album_iv"
-            android:layout_width="280dp"
-            android:layout_height="280dp"
+            android:layout_width="283dp"
+            android:layout_height="281dp"
             android:layout_marginTop="20dp"
             android:scaleType="fitXY"
-            android:src="@drawable/img_album_takecare"
+            android:src="@drawable/img_album_exp2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="If you let me, hears what I do"
+            android:text="나리는 꽃가루에 눈이 따끔해 (아야)"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="@+id/song_album_iv"
             app:layout_constraintStart_toStartOf="@+id/song_album_iv"
@@ -120,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Ill take care of you"
+            android:text="눈물이 고여도 꾹 참을래"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="@+id/song_music_lyrics_01_iv"
             app:layout_constraintStart_toStartOf="@+id/song_music_lyrics_01_iv"
@@ -152,35 +152,34 @@
 
         </LinearLayout>
 
-        <View
-            android:id="@+id/song_progressbar_backgroud_view"
+        <SeekBar
+            android:id="@+id/song_progressbar_sb"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="10dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@null"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:max="1000"
+            android:progress="0"
+            android:progressBackgroundTint="@color/white"
+            android:progressTint="@color/purple_500"
+            android:thumb="@color/teal_200"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout" />
 
-        <View
-            android:id="@+id/song_progressbar_view"
-            android:layout_width="50dp"
-            android:layout_height="2dp"
-            android:layout_marginStart="20dp"
-            android:background="#A9A9A9"
-            app:layout_constraintBottom_toBottomOf="@+id/song_progressbar_backgroud_view"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/song_progressbar_backgroud_view" />
 
         <TextView
             android:id="@+id/song_start_time_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:08"
+            android:text="00:00"
             android:textColor="#A9A9A9"
-            app:layout_constraintStart_toStartOf="@+id/song_progressbar_backgroud_view"
-            app:layout_constraintTop_toBottomOf="@+id/song_progressbar_backgroud_view" />
+            app:layout_constraintStart_toStartOf="@+id/song_progressbar_sb"
+            app:layout_constraintTop_toBottomOf="@+id/song_progressbar_sb" />
 
 
         <TextView
@@ -189,8 +188,8 @@
             android:layout_height="wrap_content"
             android:text="01:00"
             android:textColor="#A9A9A9"
-            app:layout_constraintEnd_toEndOf="@+id/song_progressbar_backgroud_view"
-            app:layout_constraintTop_toBottomOf="@+id/song_progressbar_backgroud_view" />
+            app:layout_constraintEnd_toEndOf="@+id/song_progressbar_sb"
+            app:layout_constraintTop_toBottomOf="@+id/song_progressbar_sb" />
 
 
         <LinearLayout
@@ -201,7 +200,7 @@
             app:layout_constraintBottom_toTopOf="@+id/song_related_iv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/song_progressbar_view">
+            app:layout_constraintTop_toBottomOf="@+id/song_progressbar_sb">
 
             <ImageView
                 android:id="@+id/song_previous_iv"

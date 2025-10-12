@@ -1,12 +1,10 @@
 package com.example.umc_9th
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
 import androidx.recyclerview.widget.LinearLayoutManager
 import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.FragmentSavedSongBinding
@@ -14,7 +12,6 @@ import umc.study.umc_8th.databinding.FragmentSavedSongBinding
 class SavedSongFragment : Fragment() {
     lateinit var binding: FragmentSavedSongBinding
     private var savedSongDatas = ArrayList<SavedSong>()
-    private var gson: Gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater,

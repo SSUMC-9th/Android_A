@@ -3,6 +3,7 @@ package com.example.umc_9th
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,13 +32,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // setTheme(R.style.Theme_UMC_9th)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 초기 화면으로 HomeFragment 설정
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, HomeFragment())
-            .commitAllowingStateLoss()
+        val song = Song(
+            binding.mainMiniplayerTitleTv.text.toString(),
+            binding.mainMiniplayerSingerTv.text.toString(),
+            0,
+            215, // 0이 아닌 값으로 설정
+            false,
+            R.raw.song_sample
+
+        )
+
+        binding.mainPlayerCl.setOnClickListener {
+            val intent = Intent(this,SongActivity::class.java)
+            intent.putExtra("title", song.title)
+            intent.putExtra("singer", song.singer)
+            intent.putExtra("second", song.second)
+            intent.putExtra("playtime", song.playtime)
+            intent.putExtra("isPlaying", song.isPlaying)
+            intent.putExtra("music", song.music)
+
+            startActivity(intent)
+        }
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.main_frm) as NavHostFragment
