@@ -16,13 +16,13 @@ class AlbumFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = FragmentAlbumBinding.inflate(layoutInflater)
         arguments?.let {
             val title = it.getString("title")
             val singer = it.getString("singer")
             binding.albumTitle.text = title
             binding.albumSinger.text = singer
         }
-        binding = FragmentAlbumBinding.inflate(layoutInflater)
         binding.albumBackButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainerView, HomeFragment())

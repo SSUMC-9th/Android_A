@@ -147,15 +147,6 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView6"
         app:srcCompat="@drawable/img_album_exp" />
 
-    <ImageView
-        android:id="@+id/MusicImage1"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8"
-        app:srcCompat="@drawable/img_album_lovewinsall" />
 
     <TextView
         android:id="@+id/textView8"
@@ -178,28 +169,13 @@
         app:layout_constraintTop_toBottomOf="@+id/homeMusicBanner"
         app:srcCompat="@drawable/btn_arrow_more" />
 
-    <TextView
-        android:id="@+id/albumTitleA"
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/todayMusicRV"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="5dp"
-        android:fontFamily="sans-serif-black"
-        android:text="Love Wins All"
-        android:textColor="#181212"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MusicImage1" />
-
-    <TextView
-        android:id="@+id/albumSingerA"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:fontFamily="sans-serif-black"
-        android:text="IU"
-        android:textColor="#B4B4B4"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/albumTitleA" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
