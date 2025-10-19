@@ -39,7 +39,6 @@ object MusicPlayerManager {
         mediaPlayer = MediaPlayer.create(context, song.music).apply {
             seekTo(currentSong!!.second * 1000) // 저장된 위치로 이동
             setOnCompletionListener {
-                // 노래가 끝나면
                 stopPlayback()
             }
         }
