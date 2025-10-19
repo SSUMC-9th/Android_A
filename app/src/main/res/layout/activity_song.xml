@@ -136,7 +136,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView15"
         app:srcCompat="@drawable/btn_player_unlike_off" />
 
-    <ProgressBar
+    <SeekBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="376dp"
@@ -149,7 +149,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView14" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/currentTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -160,7 +160,7 @@
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/lastTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
