@@ -166,7 +166,7 @@
             android:progress="0"
             android:progressBackgroundTint="@color/white"
             android:progressTint="@color/purple_500"
-            android:thumb="@color/teal_200"
+            android:thumb="@color/purple_500"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout" />

@@ -18,6 +18,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/home_banner_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_marginTop="8dp"
+            app:ci_drawable="@drawable/indicator_active"
+            app:ci_drawable_unselected="@drawable/indicator_active"
+            app:layout_constraintTop_toBottomOf="@id/home_main_banner_vp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
         <ImageView
             android:id="@+id/home_pannel_btn_nugu_iv"
             android:layout_width="35dp"
@@ -164,7 +175,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/home_main_banner_vp" />
+            app:layout_constraintTop_toBottomOf="@id/home_banner_indicator" />
 
         <ImageView
             android:id="@+id/home_today_music_title_btn_iv"
@@ -187,7 +198,7 @@
             android:textColor="#3F3FFF"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@id/home_today_music_domestic_tv"
-            app:layout_constraintTop_toBottomOf="@id/home_main_banner_vp" />
+            app:layout_constraintTop_toBottomOf="@id/home_banner_indicator" />
 
         <TextView
             android:id="@+id/home_today_music_domestic_tv"
@@ -198,7 +209,7 @@
             android:text="국내"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@id/home_today_music_oversea_tv"
-            app:layout_constraintTop_toBottomOf="@id/home_main_banner_vp" />
+            app:layout_constraintTop_toBottomOf="@id/home_banner_indicator" />
 
         <TextView
             android:id="@+id/home_today_music_oversea_tv"
@@ -209,7 +220,7 @@
             android:text="해외"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/home_main_banner_vp" />
+            app:layout_constraintTop_toBottomOf="@id/home_banner_indicator" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/home_today_music_album_rv"
