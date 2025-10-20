@@ -17,7 +17,6 @@ data class SavedSong(
 
 class SavedSongAdapter(
     private val items: MutableList<SavedSong>,
-    private val onPlayClick: (SavedSong) -> Unit
 ) : RecyclerView.Adapter<SavedSongAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -40,7 +39,15 @@ class SavedSongAdapter(
         holder.title.text = song.title
         holder.artist.text = song.artist
 
-        holder.playButton.setOnClickListener { onPlayClick(song) }
+        var isPlaying = false
+        holder.playButton.setOnClickListener {
+            isPlaying = !isPlaying
+            if (isPlaying) {
+                holder.playButton.setImageResource(R.drawable.nugu_btn_pause_32)
+            } else {
+                holder.playButton.setImageResource(R.drawable.nugu_btn_play_32)
+            }
+        }
 
         holder.moreButton.setOnClickListener {
             val pos = holder.bindingAdapterPosition
