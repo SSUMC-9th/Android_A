@@ -1,6 +1,8 @@
 package com.example.umc_9th
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,14 +10,28 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import me.relex.circleindicator.CircleIndicator3
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.FragmentHomeBinding
+import kotlin.concurrent.timer
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding : FragmentHomeBinding
     interface OnAlbumButtonClickListener {
         fun onAlbumButtonClicked(title : String, singer : String)
+    }
+    inner class PagerRunnable:Runnable{
+        override fun run() {
+            while(true){
+                Thread.sleep(3000)
+                handler.sendEmptyMessage(0)
+            }
+        }
+    }
+    val handler= Handler(Looper.getMainLooper()) {
+        setPage()
+        true
     }
     private var listener: OnAlbumButtonClickListener? = null
     override fun onCreateView(
@@ -25,6 +41,8 @@ class HomeFragment : Fragment() {
         listener = context as OnAlbumButtonClickListener?
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
+        var thread = Thread(PagerRunnable())
+        thread.start()
         val todayAlbumList = mutableListOf(
             AlbumData("Love wins all", "IU", R.drawable.img_album_lovewinsall),
             AlbumData("Drama", "aespa", R.drawable.img_album_drama),
@@ -60,10 +78,18 @@ class HomeFragment : Fragment() {
         binding.homeMusicBanner.adapter = bannerAdapter
         binding.homeMusicBanner.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
+        binding.bannerIndicator.setViewPager(binding.homeMusicBanner)
+
         return binding.root
 
     }
+    var bannerNum = 0
+    fun setPage() {
+        if(bannerNum==2) bannerNum=0
+        binding.homeMusicBanner.setCurrentItem(bannerNum,true)
+        bannerNum++
 
+    }
 
 
 }

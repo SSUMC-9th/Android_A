@@ -19,11 +19,14 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.ActivitySongBinding
+import kotlin.math.max
 
 class SongActivity : AppCompatActivity() {
     private lateinit var binding : ActivitySongBinding
     lateinit var title : String
     lateinit var singer : String
+    private var startPos = 0
+    private var maxPos = 100
     var repeat : Boolean = false
     var suffle : Boolean = false
     var playing : Boolean = false
@@ -40,18 +43,11 @@ class SongActivity : AppCompatActivity() {
             isBound = true
 
             musicService?.let { service ->
-                // SeekBar 최대값 설정
-                val duration = service.getDuration()
-                binding.progressBar.max = duration
-                binding.lastTime.text = milliTotime(duration)
-
-                // 현재 재생 상태 확인
-                playing = service.isPlaying()
-
-                // 현재 위치 업데이트
-                val currentPos = service.getCurrentPosition()
-                binding.progressBar.progress = currentPos
-                binding.currentTime.text = milliTotime(currentPos)
+                binding.progressBar.max = maxPos
+                binding.progressBar.progress = startPos
+                musicService?.seekTo(binding.progressBar.progress)
+                binding.lastTime.text = milliTotime(binding.progressBar.max)
+                binding.currentTime.text = milliTotime(binding.progressBar.progress)
 
                 // SeekBar 업데이트 시작
                 if (playing) {
@@ -77,9 +73,18 @@ class SongActivity : AppCompatActivity() {
         singer = intent.getStringExtra("singer").toString()
         binding.titleText.text = title
         binding.singerText.text = singer
+        startPos = intent.getIntExtra("seekBarPr", 0)
+        maxPos = intent.getIntExtra("seekBarMax", 100)
+
         binding.repeatButton.setColorFilter(Color.rgb(140, 140, 140))
         binding.suffleButton.setColorFilter(Color.rgb(140, 140, 140))
         binding.backButton.setOnClickListener {
+            val resultIntent = Intent()
+
+            resultIntent.putExtra("seekBarPr", binding.progressBar.progress)
+            resultIntent.putExtra("seekBarMax", binding.progressBar.max)
+            resultIntent.putExtra("title", binding.titleText.text)
+            setResult(RESULT_OK, resultIntent)
             finish()
         }
         binding.repeatButton.setOnClickListener {
@@ -121,7 +126,6 @@ class SongActivity : AppCompatActivity() {
 
         }
 
-        //SeekBar 터치 시 MediaPlayer에 영
         binding.progressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -156,14 +160,10 @@ class SongActivity : AppCompatActivity() {
         }
     }
     override fun onDestroy() {
+
         super.onDestroy()
         unbindService(connection)
         isBound = false
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra(MainActivity.STRING_INTENT_KEY, title)
-        }
-        setResult(RESULT_OK, intent)
-
     }
     private fun milliTotime(milliseconds: Int?): String {
         val totalSeconds = milliseconds?.div(1000)

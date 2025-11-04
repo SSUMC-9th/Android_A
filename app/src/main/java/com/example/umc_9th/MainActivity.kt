@@ -1,6 +1,7 @@
 package com.example.umc_9th
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -18,12 +19,16 @@ import umc.study.umc_9th.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), HomeFragment.OnAlbumButtonClickListener {
     private lateinit var binding : ActivityMainBinding
-    companion object {const val STRING_INTENT_KEY = "title"}
-    private val getResultText = registerForActivityResult(
+    private val launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if(result.resultCode == RESULT_OK) {
-            val returnString = result.data?.getStringExtra(STRING_INTENT_KEY)
+            val returnString = result.data?.getStringExtra("title")
+            val progress = result.data?.getIntExtra("seekBarPr", 0) ?: 0
+            val max = result.data?.getIntExtra("seekBarMax", 100) ?: 100
+
+            binding.seekBar.max = max
+            binding.seekBar.progress = progress
             val toast = Toast.makeText(this, returnString, Toast.LENGTH_SHORT) // in Activity
             toast.show()
         }
@@ -50,7 +55,9 @@ class MainActivity : AppCompatActivity(), HomeFragment.OnAlbumButtonClickListene
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra("title", binding.miniTitle.text.toString())
             intent.putExtra("singer", binding.miniSinger.text.toString())
-            getResultText.launch(intent)
+            intent.putExtra("seekBarPr", binding.seekBar.progress)
+            intent.putExtra("seekBarMax", binding.seekBar.max)
+            launcher.launch(intent)
         }
 
         binding.bottomNav.setOnItemSelectedListener { item ->
