@@ -3,6 +3,7 @@ package com.example.umc_9th
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_9th.data.Album
 import umc.study.umc_8th.databinding.ItemAlbumBinding
 
 class AlbumRVAdapter(

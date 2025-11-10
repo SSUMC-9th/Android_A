@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.umc_9th.data.Album
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 import umc.study.umc_8th.R

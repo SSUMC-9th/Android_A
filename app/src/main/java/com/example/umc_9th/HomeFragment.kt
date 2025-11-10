@@ -3,14 +3,21 @@ package com.example.umc_9th
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.example.umc_9th.data.Album
+import com.example.umc_9th.data.Song
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.FragmentHomeBinding
 
@@ -18,6 +25,10 @@ class HomeFragment : Fragment() {
     lateinit var binding : FragmentHomeBinding
     private lateinit var albumRVAdapter: AlbumRVAdapter
     private var albumDatas = ArrayList<Album>()
+
+    private var songList = emptyList<Song>()
+    private lateinit var songDB: AppDatabase
+
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private val autoScrollRunnable = object : Runnable {
         override fun run() {
@@ -38,31 +49,10 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        songDB = AppDatabase.getInstance(requireContext())
 
-        // 데이터 리스트 생성 더미 데이터
-        albumDatas.apply {
-            add(Album("LILAC", "아이유 (IU)", R.drawable.img_album_exp2))
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Next Level", "aespa", R.drawable.img_album_exp3))
-            add(Album("Drama", "aespa", R.drawable.img_album_drama))
-            add(Album("Boy with Luv", "방탄소년단 (BTS)", R.drawable.img_album_exp4))
-            add(Album("SUPERNOVA", "aespa", R.drawable.img_album_supernova))
-        }
-
-        // Adapter 초기화 (플레이 버튼 클릭 시 MainActivity의 미니플레이어 업데이트)
-        albumRVAdapter = AlbumRVAdapter(albumDatas) { album ->
-            val song = Song(
-                album.title,
-                album.singer,
-                0,
-                215, // 예시: 기본 재생 시간
-                true,
-                R.raw.song_sample
-            )
-
-            // 2. Album 대신 Song 객체를 전달합니다.
-            (activity as? MainActivity)?.updateMiniPlayer(song)
-        }
+        setupAlbumRV()
+        loadSongsFromDB()
 
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
         binding.homeTodayMusicAlbumRv.layoutManager =
@@ -94,6 +84,44 @@ class HomeFragment : Fragment() {
         binding.homeBannerIndicator.setViewPager(binding.homeMainBannerVp)
 
         return binding.root
+    }
+
+    private fun setupAlbumRV(){
+    // 데이터 리스트 생성 더미 데이터
+        albumDatas.apply {
+            add(Album(0,"LILAC", "아이유 (IU)", false, R.drawable.img_album_exp2))
+            add(Album(1, "Butter", "방탄소년단 (BTS)", false, R.drawable.img_album_exp))
+            add(Album(2, "Next Level", "aespa", false, R.drawable.img_album_exp3))
+            add(Album(3, "Drama", "aespa", false,R.drawable.img_album_drama))
+            add(Album(4, "Boy with Luv", "방탄소년단 (BTS)", false,R.drawable.img_album_exp4))
+            add(Album(5, "SUPERNOVA", "aespa", false,R.drawable.img_album_supernova))
+        }
+        albumRVAdapter = AlbumRVAdapter(albumDatas){album ->
+            val song = Song(
+                0,
+                album.title,
+                album.singer,
+                0,
+                215,
+                true,
+                R.raw.song_sample,
+                album.coverImg,
+                false,
+                0
+            )
+            (activity as? MainActivity)?.updateMiniPlayer(song)
+        }
+        binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
+    }
+
+    // DB에서 데이터를 로드하는 함수
+    private fun loadSongsFromDB() {
+        lifecycleScope.launch(Dispatchers.IO){
+            songList = songDB.songDao().getAllSongs()
+            withContext(Dispatchers.Main) {
+                Log.d("HomeFragment", "loadSongs: $songList")
+            }
+        }
     }
 
     // 자동 스크롤 생명주기 관리 (메모리 누수 방지)

@@ -1,149 +1,17 @@
-//package com.example.umc_9th
-//
-//import android.media.MediaPlayer
-//import android.os.Bundle
-//import android.view.View
-//import android.widget.SeekBar
-//import androidx.appcompat.app.AppCompatActivity
-//import kotlinx.coroutines.*
-//import umc.study.umc_8th.databinding.ActivitySongBinding
-//import java.text.SimpleDateFormat
-//import java.util.*
-//
-//class SongActivity : AppCompatActivity() {
-//
-//    lateinit var binding: ActivitySongBinding
-//    private var song: Song? = null
-//
-//    private var mediaPlayer: MediaPlayer? = null
-//    private var playerJob: Job? = null
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        binding = ActivitySongBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        initSongAndPlayer()
-//
-//        binding.songPreviousIv.setOnClickListener {
-//            restartSong()
-//        }
-//        binding.songNextIv.setOnClickListener {
-//            restartSong()
-//        }
-//        binding.songMiniplayerIv.setOnClickListener {
-//            setPlayerStatus(true)
-//            mediaPlayer?.start()
-//        }
-//        binding.songPauseIv.setOnClickListener {
-//            setPlayerStatus(false)
-//            mediaPlayer?.pause()
-//        }
-//
-//        binding.songDownIb.setOnClickListener { finish() }
-//    }
-//
-//    private fun initSongAndPlayer() {
-//        if (intent.hasExtra("title") && intent.hasExtra("singer")) {
-//            song = Song(
-//                intent.getStringExtra("title")!!,
-//                intent.getStringExtra("singer")!!,
-//                intent.getIntExtra("second", 0),
-//                intent.getIntExtra("playtime", 60),
-//                intent.getBooleanExtra("isPlaying", false),
-//                intent.getIntExtra("music", 0)
-//            )
-//
-//            // MediaPlayer 생성
-//            mediaPlayer = MediaPlayer.create(this, song!!.music)
-//
-//            setPlayerUI(song!!)
-//
-//        } else {
-//            finish()
-//        }
-//    }
-//
-//    private fun setPlayerUI(currentSong: Song) {
-//        binding.songMusicTitleTv.text = currentSong.title
-//        binding.songSingerNameTv.text = currentSong.singer
-//        binding.songStartTimeTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentSong.second * 1000)
-//
-//        val duration = mediaPlayer?.duration ?: 0
-//        binding.songEndTimeTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(duration)
-//
-//        // SeekBar의 최대값도 실제 음악 길이로 설정
-//        binding.songProgressbarSb.max = duration
-//        binding.songProgressbarSb.progress = currentSong.second * 1000
-//
-//        setPlayerStatus(currentSong.isPlaying)
-//    }
-//
-//    private fun setPlayerStatus(isPlaying: Boolean) {
-//        song?.isPlaying = isPlaying
-//
-//        if (isPlaying) {
-//            binding.songMiniplayerIv.visibility = View.GONE
-//            binding.songPauseIv.visibility = View.VISIBLE
-//            startTimer() // 재생 시 타이머 시작
-//        } else {
-//            binding.songMiniplayerIv.visibility = View.VISIBLE
-//            binding.songPauseIv.visibility = View.GONE
-//            playerJob?.cancel() // 멈춤 시 타이머 중지
-//        }
-//    }
-//
-//    private fun restartSong() {
-//        mediaPlayer?.seekTo(0)
-//        mediaPlayer?.start()
-//        setPlayerStatus(true)
-//    }
-//    private fun startTimer() {
-//        playerJob?.cancel() // 기존 Job이 있다면 취소
-//
-//        playerJob = CoroutineScope(Dispatchers.Default).launch {
-//            while (true) {
-//                // 재생 중일 때만 UI 업데이트
-//                if (mediaPlayer?.isPlaying == true) {
-//                    val currentPosition = mediaPlayer?.currentPosition ?: 0
-//                    // UI 업데이트는 Main 스레드에서 실행
-//                    withContext(Dispatchers.Main) {
-//                        binding.songStartTimeTv.text =
-//                            SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-//                        binding.songProgressbarSb.progress = currentPosition
-//                    }
-//                }
-//                delay(500) // 0.5초 간격으로 체크
-//            }
-//        }
-//    }
-//
-//    // 생명주기에 맞춰 MediaPlayer 리소스를 관리합니다.
-//    override fun onPause() {
-//        super.onPause()
-//        // 화면이 보이지 않을 때 음악을 일시정지하고 상태를 저장
-//        mediaPlayer?.pause()
-//        setPlayerStatus(false)
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        playerJob?.cancel()     // 코루틴 종료
-//        mediaPlayer?.release()  // MediaPlayer 자원 해제
-//        mediaPlayer = null      // 메모리 누수 방지
-//    }
-//}
-
 
 package com.example.umc_9th
 
+import umc.study.umc_8th.R
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.collect
+import com.example.umc_9th.data.Song
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import umc.study.umc_8th.databinding.ActivitySongBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -153,12 +21,19 @@ class SongActivity : AppCompatActivity() {
     lateinit var binding: ActivitySongBinding
     private var song: Song? = null
 
+    private lateinit var songDB: AppDatabase
+    private var songs = ArrayList<Song>() // DB에서 가져올 '전체 곡 리스트'
+    private var nowPos = 0 // '전체 곡 리스트' 중 현재 곡의 인덱스
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        songDB = AppDatabase.getInstance(this)
+
         initSongAndPlayer() // UI 초기화
+        loadSongsFromDB() // DB에서 전체 곡 리스트 로드
         observePlayerState() // 관리자 상태 관찰 시작
 
         // 모든 버튼이 MusicPlayerManager를 제어하도록
@@ -169,15 +44,16 @@ class SongActivity : AppCompatActivity() {
             MusicPlayerManager.pause()
         }
         binding.songPreviousIv.setOnClickListener {
-            MusicPlayerManager.stopPlayback()
-            MusicPlayerManager.play()
+            moveSong(-1)
         }
         binding.songNextIv.setOnClickListener {
-            MusicPlayerManager.stopPlayback()
-            MusicPlayerManager.play()
+            moveSong(+1)
         }
         binding.songDownIb.setOnClickListener {
             finish()
+        }
+        binding.songLikeIv.setOnClickListener {
+            toggleLikeStatus()
         }
 
         // SeekBar 리스너
@@ -196,6 +72,101 @@ class SongActivity : AppCompatActivity() {
         })
     }
 
+    private fun moveSong(direction: Int) {
+        if (songs.isEmpty()) return
+
+        // 1. nowPos 값을 변경 (이전/다음)
+        nowPos += direction
+
+        // 2. nowPos가 리스트 범위를 벗어났는지 확인
+        if (nowPos < 0){ // 첫 곡에서 '이전'을 누르면
+            nowPos = songs.size - 1 //n 마지막 곡으로
+        } else if (nowPos >= songs.size) { // 마지막 곡에서 '다음'을 누르면
+            nowPos = 0 // 첫 곡으로
+        }
+
+        // 3. 새 위치에 맞는 곡을 Manager에 로드하고 재생
+        val newSong = songs[nowPos]
+        MusicPlayerManager.loadSong(this, newSong)
+        MusicPlayerManager.play()
+
+        setPlayerUI(newSong)
+    }
+
+    // 하트 버튼을 눌렀을 때 호출되는 메인 함수
+    private fun toggleLikeStatus(){
+        // 1. Manager로부터 '현재 곡'을 직접 가져옵니다.
+        val currentSong = MusicPlayerManager.currentSong ?: return
+
+        // 2. '현재 곡'의 '좋아요' 상태를 반대로 뒤집습니다.
+        currentSong.isLike = !currentSong.isLike
+
+        // 3. 하트 아이콘 UI를 즉시 업데이트합니다.
+        updateLikeButtonUI(currentSong.isLike)
+
+        // 4. 변경된 '현재 곡' 객체를 DB에 업데이트합니다.
+        updateSongInDB(currentSong)
+
+        // 5. (선택적) DB에서 불러온 'songs' 리스트와도 상태를 동기화합니다.
+        //    (DB 로드가 끝났다는 보장이 없으므로 안전하게 확인)
+        if (songs.isNotEmpty() && nowPos < songs.size && songs[nowPos].id == currentSong.id) {
+            songs[nowPos].isLike = currentSong.isLike
+        }
+    }
+
+    // 하트 아이콘의 이미지를 바꾸는 함수
+    private fun updateLikeButtonUI(isLiked: Boolean) {
+        if (isLiked){
+            binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
+        }else{
+            binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
+        }
+    }
+
+    // RoomDB에 'Song' 객체를 업데이트
+    private fun updateSongInDB(song: Song){
+        lifecycleScope.launch(Dispatchers.IO) {
+            songDB.songDao().update(song)
+        }
+    }
+
+    private fun loadSongsFromDB() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            // 1. DB에서 모든 노래를 가져옴
+            val songListFromDB = songDB.songDao().getAllSongs()
+
+            // 2. SongActivity의 'songs' 리스트를 채움
+            songs.clear()
+            songs.addAll(songListFromDB)
+
+            // 3. DB 로드가 완료된 후, 현재 곡의 위치를 찾음
+            findCurrentSongPosition()
+
+            // 4. UI 표시는 메인 스레드에서 진행
+            withContext(Dispatchers.Main) {
+                MusicPlayerManager.updatePlaylist(songs)
+            }
+        }
+    }
+
+    private fun findCurrentSongPosition() {
+        val currentSongId = MusicPlayerManager.currentSong?.id
+
+        if (currentSongId != null) {
+            // 2. DB에서 가져온 'songs' 리스트를 반복하여 현재 곡 ID와 일치하는 곡의 인덱스를 찾
+            this.nowPos = songs.indexOfFirst { it.id == currentSongId }
+
+            // (안전장치) 만약 리스트에 현재 곡이 없으면 0으로 설정
+            if (this.nowPos == -1) {
+                this.nowPos = 0
+            }
+        } else {
+            this.nowPos = 0
+        }
+
+        Log.d("SongActivity", "현재 곡 위치(nowPos): $nowPos")
+    }
+
     private fun initSongAndPlayer() {
         // 관리자로부터 현재 곡 정보를 가져옴
         this.song = MusicPlayerManager.currentSong
@@ -211,9 +182,12 @@ class SongActivity : AppCompatActivity() {
         binding.songMusicTitleTv.text = currentSong.title
         binding.songSingerNameTv.text = currentSong.singer
 
-        val duration = currentSong.playtime * 1000
+        val duration = currentSong.playTime * 1000
         binding.songEndTimeTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(duration)
         binding.songProgressbarSb.max = duration
+
+        // 노래가 로드될 때, 저장된 '좋아요' 상태를 UI에 반영
+        updateLikeButtonUI(currentSong.isLike)
     }
 
     private fun observePlayerState() {
@@ -240,10 +214,27 @@ class SongActivity : AppCompatActivity() {
                 song?.second = position / 1000
             }
         }
+
+        lifecycleScope.launch {
+            // 3. 실제 음악 길이를 구독
+            MusicPlayerManager.duration.collect { duration ->
+                if (duration > 0) {
+                    binding.songEndTimeTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(duration)
+                    binding.songProgressbarSb.max = duration
+                }
+            }
+        }
     }
 
     override fun onPause() {
         super.onPause()
         MusicPlayerManager.updateCurrentSecond()
+
+        MusicPlayerManager.currentSong?.let { song ->
+            lifecycleScope.launch(Dispatchers.IO){
+                val db = AppDatabase.getInstance(applicationContext)
+                db.songDao().update(song)
+            }
+        }
     }
 }

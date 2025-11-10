@@ -10,7 +10,8 @@ class LockerVPAdapter(fragment:Fragment) : FragmentStateAdapter(fragment) {
         return when (position) {
             0 -> SavedSongFragment()
             1 -> MusicFileFragment()
-            else -> SavedAlbumFragment()
+            2 -> SavedAlbumFragment()
+            else -> SavedSongFragment()
         }
     }
 }

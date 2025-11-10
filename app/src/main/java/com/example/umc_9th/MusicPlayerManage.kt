@@ -2,10 +2,11 @@ package com.example.umc_9th
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.util.Log
+import com.example.umc_9th.data.Song
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.text.SimpleDateFormat
 import java.util.*
 
 object MusicPlayerManager {
@@ -13,6 +14,10 @@ object MusicPlayerManager {
     private var mediaPlayer: MediaPlayer? = null
     var currentSong: Song? = null
         private set
+
+    private var playlist: List<Song> = emptyList()
+    private var nowPos: Int = 0
+    private var appContext: Context? = null
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var playerJob: Job? = null
@@ -29,19 +34,65 @@ object MusicPlayerManager {
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
+    private val _duration = MutableStateFlow(0)
+    val duration = _duration.asStateFlow()
+
     fun loadSong(context: Context, song: Song) {
+        this.appContext = context.applicationContext
         mediaPlayer?.release() // 기존 음악이 있다면 해제
 
         currentSong = song
         _currentSongFlow.value = song
         _playbackPosition.value = song.second * 1000
 
-        mediaPlayer = MediaPlayer.create(context, song.music).apply {
+        val newMediaPlayer = MediaPlayer.create(context, song.music)
+        if (newMediaPlayer == null) {
+            Log.e("MusicPlayerManager", "MediaPlayer 생성 실패! (ID: ${song.music})")
+            stopPlayback()
+            _currentSongFlow.value = null // 현재 곡 없음으로 방송
+            return
+        }
+
+        mediaPlayer = newMediaPlayer.apply {
             seekTo(currentSong!!.second * 1000) // 저장된 위치로 이동
             setOnCompletionListener {
                 stopPlayback()
             }
+            _duration.value = this.duration
         }
+    }
+
+    fun updatePlaylist(newPlayList: List<Song>){
+        this.playlist = newPlayList
+        updateNewPos()
+    }
+
+    // 현재 곡이 플레이리스트의 몇 번째인지 찾는 함수
+    private fun updateNewPos() {
+        if (playlist.isNotEmpty()&& currentSong!=null){
+            nowPos = playlist.indexOf(currentSong)
+        }
+    }
+
+    fun playNext(){
+        if (playlist.isNotEmpty() || appContext==null) return
+
+        nowPos +=1 % playlist.size
+        loadSong(appContext!!, playlist[nowPos])
+        play()
+    }
+
+    fun playPrevious(){
+        if (playlist.isNotEmpty() || appContext==null) return
+
+        nowPos = if (nowPos - 1 < 0) {
+            playlist.size - 1
+        } else {
+            nowPos - 1
+        }
+
+        loadSong(appContext!!, playlist[nowPos])
+        play()
     }
 
     fun play() {

@@ -3,12 +3,12 @@ package com.example.umc_9th
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import umc.study.umc_8th.databinding.ItemAlbumBinding
+import com.example.umc_9th.data.Song
 import umc.study.umc_8th.databinding.ItemSavedSongBinding
 
-class SavedSongRVAdapter(private val savedSongList: ArrayList<SavedSong>) : RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
+class SavedSongRVAdapter(private val songList: ArrayList<Song>) : RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
     interface MyItemClickListener{
-        fun onItemClick(savedSong: SavedSong)
+        fun onItemClick(song: Song)
         fun onRemoveAlbum(position: Int)
     }
     private lateinit var mItemClickListener: MyItemClickListener
@@ -16,14 +16,10 @@ class SavedSongRVAdapter(private val savedSongList: ArrayList<SavedSong>) : Recy
         mItemClickListener = itemClickListener
     }
 
-    fun addItem(savedSong: SavedSong){
-        savedSongList.add(savedSong) // ?
-        notifyItemInserted(savedSongList.size - 1)
-    }
-
-    fun removeItem(position: Int){
-        savedSongList.removeAt(position)
-        notifyItemRemoved(position)
+    fun updateList(newList: List<Song>){
+        songList.clear()
+        songList.addAll(newList)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(
@@ -35,28 +31,20 @@ class SavedSongRVAdapter(private val savedSongList: ArrayList<SavedSong>) : Recy
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(savedSongList[position])
+        holder.bind(songList[position])
         holder.itemView.setOnClickListener {
-            mItemClickListener.onItemClick(savedSongList[position])
-        }
-
-        holder.binding.btnMore.setOnClickListener {
-            val pos = holder.bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                savedSongList
-                notifyItemRemoved(pos)
-            }
+            mItemClickListener.onItemClick(songList[position])
         }
     }
 
-    override fun getItemCount(): Int = savedSongList.size
+    override fun getItemCount(): Int = songList.size
 
     inner class ViewHolder(val binding: ItemSavedSongBinding):
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(savedSong: SavedSong){
-            binding.itemCoverTitleTv.text = savedSong.title
-            binding.itemCoverSingerTv.text = savedSong.singer
-            binding.itemLockerCoverImgIv.setImageResource(savedSong.coverImg!!)
+        fun bind(song: Song){
+            binding.itemCoverTitleTv.text = song.title
+            binding.itemCoverSingerTv.text = song.singer
+            binding.itemLockerCoverImgIv.setImageResource(song.coverImg!!)
 
             binding.btnMore.setOnClickListener {
                 mItemClickListener.onRemoveAlbum(bindingAdapterPosition)
