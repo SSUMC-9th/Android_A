@@ -6,10 +6,8 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -43,13 +41,25 @@ class SongActivity : AppCompatActivity() {
             val binder = service as MusicService.MusicBinder
             musicService = binder.getService()
             isBound = true
-            initSeekBar()
 
-            // 현재 재생 중이면 UI 갱신
-            if (musicService?.isPlaying() == true) {
+            // 서비스 상태로 즉시 동기화 (일시정지여도 위치/아이콘 반영)
+            val playbackStatus = musicService!!.getCurrentPlaybackStatus()
+            val duration = playbackStatus["duration"] as Int
+            val position = playbackStatus["position"] as Int
+            val playing = playbackStatus["isPlaying"] as Boolean
+
+            seekBar.max = duration
+            seekBar.progress = position
+            findViewById<TextView>(R.id.total_time).text = formatTime(duration)
+            currentTime.text = formatTime(position)
+
+            if (playing) {
                 btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
                 isPlayOn = true
                 updateSeekBar()
+            } else {
+                btnPlay.setImageResource(R.drawable.nugu_btn_play_32)
+                isPlayOn = false
             }
         }
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -68,7 +78,6 @@ class SongActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.song_artist).text = artist
         findViewById<ImageView>(R.id.song_album_image).setImageResource(albumResId)
 
-
         btnRepeat = findViewById(R.id.btn_repeat)
         btnShuffle = findViewById(R.id.btn_shuffle)
         btnPlay = findViewById(R.id.btn_play)
@@ -77,7 +86,6 @@ class SongActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.song_seekbar)
         currentTime = findViewById(R.id.current_time)
 
-        // 서비스 시작 및 바인딩
         val serviceIntent = Intent(this, MusicService::class.java).apply {
             putExtra("songTitle", title ?: "Unknown")
             putExtra("songArtist", artist ?: "Unknown")
@@ -86,7 +94,6 @@ class SongActivity : AppCompatActivity() {
         ContextCompat.startForegroundService(this, serviceIntent)
         bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
 
-        // 반복 버튼 클릭 이벤트
         btnRepeat.setOnClickListener {
             isRepeatOn = !isRepeatOn
             if (isRepeatOn) {
@@ -96,7 +103,6 @@ class SongActivity : AppCompatActivity() {
             }
         }
 
-        // 전체재생(셔플) 버튼 클릭 이벤트
         btnShuffle.setOnClickListener {
             isShuffleOn = !isShuffleOn
             if (isShuffleOn) {
@@ -106,17 +112,20 @@ class SongActivity : AppCompatActivity() {
             }
         }
 
-        // 재생 버튼 클릭 이벤트
         btnPlay.setOnClickListener {
             isPlayOn = !isPlayOn
             if (isPlayOn) {
                 btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
                 musicService?.play()
+                updateSeekBar()
             } else {
                 btnPlay.setImageResource(R.drawable.nugu_btn_play_32)
                 musicService?.pause()
+                // 일시정지 시에도 현재 위치/시간 유지 표시
+                val pos = musicService?.getCurrentPosition() ?: 0
+                seekBar.progress = pos
+                currentTime.text = formatTime(pos)
             }
-            updateSeekBar()
         }
 
         btnNext.setOnClickListener {
@@ -148,13 +157,6 @@ class SongActivity : AppCompatActivity() {
             setResult(RESULT_OK, resultIntent)
             finish()
         }
-
-    }
-
-    private fun initSeekBar() {
-        val duration = musicService?.getDuration() ?: 0
-        seekBar.max = duration
-        findViewById<TextView>(R.id.total_time).text = formatTime(duration)
     }
 
     private fun updateSeekBar() {
@@ -182,6 +184,6 @@ class SongActivity : AppCompatActivity() {
             unbindService(connection)
             isBound = false
         }
+        updateJob?.cancel()
     }
 }
-

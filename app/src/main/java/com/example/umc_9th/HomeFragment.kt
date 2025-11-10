@@ -2,9 +2,12 @@ package com.example.umc_9th
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
@@ -15,6 +18,9 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val slideHandler = Handler(Looper.getMainLooper())
+    private lateinit var slideRunnable: Runnable
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,6 +77,29 @@ class HomeFragment : Fragment() {
         }
         binding.homeTopBanner.adapter = bannerAdapter
         binding.homeBannerIndicator.setViewPager2(binding.homeTopBanner)
+
+        slideRunnable = object : Runnable {
+            override fun run() {
+                val itemCount = bannerAdapter.itemCount
+                if (itemCount > 0) {
+                    val nextItem =
+                        (binding.homeTopBanner.currentItem + 1) % itemCount
+                    binding.homeTopBanner.setCurrentItem(nextItem, true)
+                }
+                slideHandler.postDelayed(this, 3000)
+            }
+        }
+
+        slideHandler.postDelayed(slideRunnable, 3000)
+
+        binding.homeTopBanner.registerOnPageChangeCallback(
+            object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    slideHandler.removeCallbacks(slideRunnable)
+                    slideHandler.postDelayed(slideRunnable, 3000)
+                }
+            })
 
         val albums = listOf(
             Album("Next Level", "aespa", R.drawable.img_album_exp3),
