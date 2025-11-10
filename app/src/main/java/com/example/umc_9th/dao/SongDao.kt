@@ -1,5 +1,5 @@
 package com.example.umc_9th.dao
-
+/*
 import androidx.room.*
 import com.example.umc_9th.entitiy.SongTableEntity
 
@@ -19,4 +19,4 @@ interface SongDao {
 
     @Query("SELECT * FROM SongTable WHERE id = :songID")
     fun getSongByIdx(songID: Int): List<SongTableEntity>
-}
+}*/

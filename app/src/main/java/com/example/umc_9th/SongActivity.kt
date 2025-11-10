@@ -13,35 +13,32 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.umc_9th.db.SongDatabase
-import com.example.umc_9th.entitiy.AlbumTableEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.umc_9th.entitiy.SongTableEntity
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.*
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.ActivitySongBinding
-import kotlin.math.max
 
 class SongActivity : AppCompatActivity() {
-    private lateinit var binding : ActivitySongBinding
-    lateinit var title : String
-    lateinit var singer : String
-    var songID : Int = 0
+
+    private val uid = "asdfqwer1234"
+    private val userSongsRef = FirebaseDatabase.getInstance().getReference("songs").child(uid)
+
+    private lateinit var binding: ActivitySongBinding
+    private var songID: Int = 0
     private var startPos = 0
     private var maxPos = 100
-    var repeat : Boolean = false
-    var suffle : Boolean = false
-    var playing : Boolean = false
-    var thisContext = this
+    private var repeat = false
+    private var shuffle = false
+    private var playing = false
 
-    //서비스 정의
+    private lateinit var thisContext: Context
+
     private var musicService: MusicService? = null
     private var isBound = false
     private var updateJob: Job? = null
+
+    private val songList = mutableListOf<SongTableEntity>()
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -49,19 +46,13 @@ class SongActivity : AppCompatActivity() {
             musicService = binder.getService()
             isBound = true
 
-            musicService?.let { service ->
-                binding.progressBar.max = maxPos
-                binding.progressBar.progress = startPos
-                musicService?.seekTo(binding.progressBar.progress)
-                binding.lastTime.text = milliTotime(binding.progressBar.max)
-                binding.currentTime.text = milliTotime(binding.progressBar.progress)
+            binding.progressBar.max = maxPos
+            binding.progressBar.progress = startPos
+            musicService?.seekTo(binding.progressBar.progress)
+            binding.lastTime.text = milliToTime(binding.progressBar.max)
+            binding.currentTime.text = milliToTime(binding.progressBar.progress)
 
-                // SeekBar 업데이트 시작
-                if (playing) {
-                    startSeekBarUpdate()
-                }
-
-            }
+            if (playing) startSeekBarUpdate()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -74,159 +65,191 @@ class SongActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        thisContext = this
+
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        title = intent.getStringExtra("title").toString()
-        singer = intent.getStringExtra("singer").toString()
+
+        val title = intent.getStringExtra("title") ?: ""
+        val singer = intent.getStringExtra("singer") ?: ""
         songID = intent.getIntExtra("songID", 0)
-        binding.titleText.text = title
-        binding.singerText.text = singer
         startPos = intent.getIntExtra("seekBarPr", 0)
         maxPos = intent.getIntExtra("seekBarMax", 100)
-// TODO - fix to firebase
-        val RoomDB = SongDatabase.getInstance(this)
-        val SongDao = RoomDB.SongDao()
-        val AlbumDao = RoomDB.AlbumDao()
-// TODO - fix to firebase
-        CoroutineScope(Dispatchers.IO).launch {
-            binding.titleText.text = SongDao.getSongByIdx(songID)[0].title
-            binding.singerText.text = SongDao.getSongByIdx(songID)[0].singer
-            if(SongDao.getSongByIdx(songID)[0].isLike) binding.likeButton.setImageResource(R.drawable.ic_my_like_on)
-            else binding.likeButton.setImageResource(R.drawable.ic_my_like_off)
-        }
+
+        binding.titleText.text = title
+        binding.singerText.text = singer
 
         binding.repeatButton.setColorFilter(Color.rgb(140, 140, 140))
         binding.suffleButton.setColorFilter(Color.rgb(140, 140, 140))
-        binding.backButton.setOnClickListener {
-            val resultIntent = Intent()
 
-            resultIntent.putExtra("seekBarPr", binding.progressBar.progress)
-            resultIntent.putExtra("seekBarMax", binding.progressBar.max)
-            resultIntent.putExtra("title", binding.titleText.text)
-            resultIntent.putExtra("songID", songID)
-            setResult(RESULT_OK, resultIntent)
-            finish()
-        }
-        binding.repeatButton.setOnClickListener {
-            if(!repeat) binding.repeatButton.setColorFilter(Color.rgb(73, 6, 204))
-            else binding.repeatButton.setColorFilter(Color.rgb(140, 140, 140))
-            repeat = !repeat
-        }
-        binding.suffleButton.setOnClickListener {
-            if(!suffle) binding.suffleButton.setColorFilter(Color.rgb(73,6,204))
-            else binding.suffleButton.setColorFilter(Color.rgb(140,140,140))
-            suffle = !suffle
-        }
+        loadSongsFromFirebase()
+        setupMusicService(title, singer)
+        setupButtons()
+        setupSeekBar()
+    }
 
+    private fun loadSongsFromFirebase() {
+        userSongsRef.get()
+            .addOnSuccessListener { dataSnapshot ->
+                songList.clear()
+                for (child in dataSnapshot.children) {
+                    val song = child.getValue(SongTableEntity::class.java)
+                    if (song != null) songList.add(song)
+                }
+
+                Log.d("Firebase", "노래 ${songList.size}개 로드 성공")
+
+                val currentSong = songList.firstOrNull { it.id == songID }
+                currentSong?.let { song ->
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        binding.titleText.text = song.title
+                        binding.singerText.text = song.singer
+                        binding.likeButton.setImageResource(
+                            if (song.isLike) R.drawable.ic_my_like_on else R.drawable.ic_my_like_off
+                        )
+                    }
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Firebase", "데이터 로드 실패: ${it.message}")
+            }
+    }
+
+    private fun setupMusicService(title: String, singer: String) {
         val musicServiceIntent = Intent(this, MusicService::class.java).apply {
             putExtra("songTitle", title)
             putExtra("songArtist", singer)
-            putExtra("isPlaying", false)  // 처음에는 일시정지 상태
+            putExtra("isPlaying", false)
         }
+
         ContextCompat.startForegroundService(this, musicServiceIntent)
         bindService(musicServiceIntent, connection, Context.BIND_AUTO_CREATE)
+    }
 
-        musicService?.pauseMusic()
-        binding.lastTime.text = milliTotime(musicService?.getDuration())
-        //재생&멈춤 버튼 터치 시 MediaPlayer에 반영
-        binding.playButton.setOnClickListener {
-                if(playing) {
-                    binding.playButton.setImageResource(R.drawable.btn_miniplay_mvplay)
-                    musicService?.pauseMusic()
-                    updateJob?.cancel()
-                }
-                else {
-                    musicService?.playMusic()
-                    startSeekBarUpdate()
-                    binding.playButton.setImageResource(R.drawable.btn_miniplay_mvpause)
-                }
-                playing = !playing
-        }
-        binding.back.setOnClickListener {
-            // TODO - fix to firebase
-            CoroutineScope(Dispatchers.IO).launch {
-                if(songID > 1) {
-                    val currentSongStorage = currentSongStorage(thisContext)
-                    currentSongStorage.setCurrentShow(songID-1)
-                    songID--
-                    Log.d("test", songID.toString())
-                    withContext(Dispatchers.Main) {
-                        binding.titleText.text = SongDao.getSongByIdx(songID)[0].title
-                        binding.singerText.text = SongDao.getSongByIdx(songID)[0].singer
-                    }
-                }
-            }
-        }
-        binding.forward.setOnClickListener {
-            // TODO - fix to firebase
-            CoroutineScope(Dispatchers.IO).launch {
-                if(songID < SongDao.getAllSong().size) {
-                    val currentSongStorage = currentSongStorage(thisContext)
-                    currentSongStorage.setCurrentShow(songID+1)
-                    songID++
-                    withContext(Dispatchers.Main) {
-                        binding.titleText.text = SongDao.getSongByIdx(songID)[0].title
-                        binding.singerText.text = SongDao.getSongByIdx(songID)[0].singer
-                    }
-                }
-            }
-        }
-        binding.likeButton.setOnClickListener {
-            // TODO - fix to firebase
-            CoroutineScope(Dispatchers.IO).launch {
-                val like = SongDao.getSongByIdx(songID)[0]
-                like.isLike = !like.isLike
-                Log.d("test", "${songID} ${like.isLike}")
-                SongDao.updateSong(like)
-                if(like.isLike) binding.likeButton.setImageResource(R.drawable.ic_my_like_on)
-                else binding.likeButton.setImageResource(R.drawable.ic_my_like_off)
-            }
-        }
+    private fun setupSeekBar() {
         binding.progressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
+                if (fromUser && isBound) {
                     musicService?.seekTo(progress)
-                    binding.currentTime.text = milliTotime(progress)
+                    binding.currentTime.text = milliToTime(progress)
                 }
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // SeekBar 터치 시 업데이트 일시 중지
                 updateJob?.cancel()
             }
+
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // SeekBar 터치 종료 시 업데이트 재개
-                if (playing) {
-                    startSeekBarUpdate()
-                }
+                if (playing) startSeekBarUpdate()
             }
         })
+    }
+
+    private fun setupButtons() {
+        binding.backButton.setOnClickListener {
+            val resultIntent = Intent().apply {
+                putExtra("seekBarPr", binding.progressBar.progress)
+                putExtra("seekBarMax", binding.progressBar.max)
+                putExtra("title", binding.titleText.text.toString())
+                putExtra("songID", songID)
+            }
+            setResult(RESULT_OK, resultIntent)
+            finish()
+        }
+
+        binding.repeatButton.setOnClickListener {
+            repeat = !repeat
+            val color = if (repeat) Color.rgb(73, 6, 204) else Color.rgb(140, 140, 140)
+            binding.repeatButton.setColorFilter(color)
+        }
+
+        binding.suffleButton.setOnClickListener {
+            shuffle = !shuffle
+            val color = if (shuffle) Color.rgb(73, 6, 204) else Color.rgb(140, 140, 140)
+            binding.suffleButton.setColorFilter(color)
+        }
+
+        binding.playButton.setOnClickListener {
+            if (playing) {
+                musicService?.pauseMusic()
+                updateJob?.cancel()
+                binding.playButton.setImageResource(R.drawable.btn_miniplay_mvplay)
+            } else {
+                musicService?.playMusic()
+                startSeekBarUpdate()
+                binding.playButton.setImageResource(R.drawable.btn_miniplay_mvpause)
+            }
+            playing = !playing
+        }
+
+        binding.likeButton.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val targetSong = songList.firstOrNull { it.id == songID } ?: return@launch
+                targetSong.isLike = !targetSong.isLike
+
+                withContext(Dispatchers.Main) {
+                    binding.likeButton.setImageResource(
+                        if (targetSong.isLike) R.drawable.ic_my_like_on
+                        else R.drawable.ic_my_like_off
+                    )
+                }
+
+                userSongsRef.child(targetSong.id.toString()).setValue(targetSong)
+            }
+        }
+
+        binding.back.setOnClickListener {
+            moveToSong(-1)
+        }
+
+        binding.forward.setOnClickListener {
+            moveToSong(+1)
+        }
+    }
+
+    private fun moveToSong(direction: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val currentIndex = songList.indexOfFirst { it.id == songID }
+            if (currentIndex == -1) return@launch
+
+            val newIndex = (currentIndex + direction).coerceIn(0, songList.lastIndex)
+            val nextSong = songList.getOrNull(newIndex) ?: return@launch
+
+            songID = nextSong.id
+            currentSongStorage(thisContext).setCurrentShow(songID)
+
+            withContext(Dispatchers.Main) {
+                binding.titleText.text = nextSong.title
+                binding.singerText.text = nextSong.singer
+                binding.likeButton.setImageResource(
+                    if (nextSong.isLike) R.drawable.ic_my_like_on else R.drawable.ic_my_like_off
+                )
+            }
+        }
     }
 
     private fun startSeekBarUpdate() {
         updateJob?.cancel()
         updateJob = lifecycleScope.launch(Dispatchers.Main) {
             while (isActive && isBound && musicService?.isPlaying() == true) {
-                    musicService?.let { service ->
-                        val currentPosition = service.getCurrentPosition()
-                        binding.progressBar.progress = currentPosition
-                        binding.currentTime.text = milliTotime(currentPosition)
-                    }
-                    delay(100)  // 100ms마다 업데이트
+                musicService?.let { service ->
+                    val pos = service.getCurrentPosition()
+                    binding.progressBar.progress = pos
+                    binding.currentTime.text = milliToTime(pos)
+                }
+                delay(100)
             }
         }
     }
-    override fun onDestroy() {
 
-        super.onDestroy()
-        unbindService(connection)
-        isBound = false
-    }
-    private fun milliTotime(milliseconds: Int?): String {
-        val totalSeconds = milliseconds?.div(1000)
-        val minutes = totalSeconds?.div(60)
-        val seconds = totalSeconds?.rem(60)
+    private fun milliToTime(milliseconds: Int?): String {
+        if (milliseconds == null) return "0:00"
+        val totalSeconds = milliseconds / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
         return String.format("%d:%02d", minutes, seconds)
     }
+
     override fun onPause() {
         super.onPause()
         updateJob?.cancel()
@@ -234,8 +257,15 @@ class SongActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (playing && isBound) {
-            startSeekBarUpdate()
+        if (playing && isBound) startSeekBarUpdate()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        updateJob?.cancel()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
         }
     }
 }

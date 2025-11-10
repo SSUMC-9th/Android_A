@@ -1,5 +1,5 @@
 package com.example.umc_9th.db
-
+/*
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -31,4 +31,4 @@ abstract class SongDatabase : RoomDatabase() {
             }
         }
     }
-}
+}*/

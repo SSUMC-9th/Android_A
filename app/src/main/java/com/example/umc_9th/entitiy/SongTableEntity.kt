@@ -1,10 +1,6 @@
 package com.example.umc_9th.entitiy
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-@Entity(tableName = "SongTable")
 data class SongTableEntity (
-    @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
 
     var title: String = "",
