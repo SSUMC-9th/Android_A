@@ -7,16 +7,21 @@ import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.umc_9th.db.SongDatabase
+import com.example.umc_9th.entitiy.AlbumTableEntity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.ActivitySongBinding
 import kotlin.math.max
@@ -25,11 +30,13 @@ class SongActivity : AppCompatActivity() {
     private lateinit var binding : ActivitySongBinding
     lateinit var title : String
     lateinit var singer : String
+    var songID : Int = 0
     private var startPos = 0
     private var maxPos = 100
     var repeat : Boolean = false
     var suffle : Boolean = false
     var playing : Boolean = false
+    var thisContext = this
 
     //서비스 정의
     private var musicService: MusicService? = null
@@ -71,10 +78,22 @@ class SongActivity : AppCompatActivity() {
         setContentView(binding.root)
         title = intent.getStringExtra("title").toString()
         singer = intent.getStringExtra("singer").toString()
+        songID = intent.getIntExtra("songID", 0)
         binding.titleText.text = title
         binding.singerText.text = singer
         startPos = intent.getIntExtra("seekBarPr", 0)
         maxPos = intent.getIntExtra("seekBarMax", 100)
+// TODO - fix to firebase
+        val RoomDB = SongDatabase.getInstance(this)
+        val SongDao = RoomDB.SongDao()
+        val AlbumDao = RoomDB.AlbumDao()
+// TODO - fix to firebase
+        CoroutineScope(Dispatchers.IO).launch {
+            binding.titleText.text = SongDao.getSongByIdx(songID)[0].title
+            binding.singerText.text = SongDao.getSongByIdx(songID)[0].singer
+            if(SongDao.getSongByIdx(songID)[0].isLike) binding.likeButton.setImageResource(R.drawable.ic_my_like_on)
+            else binding.likeButton.setImageResource(R.drawable.ic_my_like_off)
+        }
 
         binding.repeatButton.setColorFilter(Color.rgb(140, 140, 140))
         binding.suffleButton.setColorFilter(Color.rgb(140, 140, 140))
@@ -84,6 +103,7 @@ class SongActivity : AppCompatActivity() {
             resultIntent.putExtra("seekBarPr", binding.progressBar.progress)
             resultIntent.putExtra("seekBarMax", binding.progressBar.max)
             resultIntent.putExtra("title", binding.titleText.text)
+            resultIntent.putExtra("songID", songID)
             setResult(RESULT_OK, resultIntent)
             finish()
         }
@@ -120,12 +140,48 @@ class SongActivity : AppCompatActivity() {
                     startSeekBarUpdate()
                     binding.playButton.setImageResource(R.drawable.btn_miniplay_mvpause)
                 }
-
                 playing = !playing
-
-
         }
-
+        binding.back.setOnClickListener {
+            // TODO - fix to firebase
+            CoroutineScope(Dispatchers.IO).launch {
+                if(songID > 1) {
+                    val currentSongStorage = currentSongStorage(thisContext)
+                    currentSongStorage.setCurrentShow(songID-1)
+                    songID--
+                    Log.d("test", songID.toString())
+                    withContext(Dispatchers.Main) {
+                        binding.titleText.text = SongDao.getSongByIdx(songID)[0].title
+                        binding.singerText.text = SongDao.getSongByIdx(songID)[0].singer
+                    }
+                }
+            }
+        }
+        binding.forward.setOnClickListener {
+            // TODO - fix to firebase
+            CoroutineScope(Dispatchers.IO).launch {
+                if(songID < SongDao.getAllSong().size) {
+                    val currentSongStorage = currentSongStorage(thisContext)
+                    currentSongStorage.setCurrentShow(songID+1)
+                    songID++
+                    withContext(Dispatchers.Main) {
+                        binding.titleText.text = SongDao.getSongByIdx(songID)[0].title
+                        binding.singerText.text = SongDao.getSongByIdx(songID)[0].singer
+                    }
+                }
+            }
+        }
+        binding.likeButton.setOnClickListener {
+            // TODO - fix to firebase
+            CoroutineScope(Dispatchers.IO).launch {
+                val like = SongDao.getSongByIdx(songID)[0]
+                like.isLike = !like.isLike
+                Log.d("test", "${songID} ${like.isLike}")
+                SongDao.updateSong(like)
+                if(like.isLike) binding.likeButton.setImageResource(R.drawable.ic_my_like_on)
+                else binding.likeButton.setImageResource(R.drawable.ic_my_like_off)
+            }
+        }
         binding.progressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
