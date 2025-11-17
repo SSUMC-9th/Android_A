@@ -1,9 +1,11 @@
 package com.example.umc_9th
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.umc_9th.data.Song
+import com.example.umc_9th.ui.login.LoginActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
     private lateinit var songDB: AppDatabase
+
 
     // SharedPreferences의 이름과 키를 상수로 정의
     companion object{
@@ -44,7 +48,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        songDB = AppDatabase.getInstance(this)
+
+        // 로그인된 유저 정보 확인
+        val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val currentUserId = sharedPref.getString("user_id", null)
+
+        if (currentUserId != null) {
+            Log.d("MainActivity", "현재 로그인한 유저 ID: $currentUserId")
+            // 이후 이 ID를 사용해 DB에서 '좋아요 목록' 등을 불러오면 됩니다.
+        } else {
+            // 로그인 정보가 없으면 로그인 화면으로 보냄
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+
 
         initNavigation()
         initMIniplayerClickListener()

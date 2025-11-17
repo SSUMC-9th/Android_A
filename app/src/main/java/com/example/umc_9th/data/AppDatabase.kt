@@ -9,25 +9,25 @@ import com.example.umc_9th.data.AlbumDao
 import com.example.umc_9th.data.Song
 import com.example.umc_9th.data.SongDao
 
-@Database(entities = [Song::class, Album::class], version = 1, exportSchema = false)
+@Database(entities = [Song::class, Album::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
     abstract fun albumDao(): AlbumDao
+    companion object {
+        private var instance: AppDatabase? = null
 
-    companion object{
-        // "아직 데이터베이스가 한 번도 생성되지 않은 상태"를 담기 위해 null을 허용
-        @Volatile
-        private var INSTANCE: com.example.umc_9th.AppDatabase? = null
+        @Synchronized
         fun getInstance(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+            if (instance == null) {
+                instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "song-database"
-                ).build()
-                INSTANCE = instance
-                instance
+                    "app_database"
+                )
+                    .fallbackToDestructiveMigration() // 버전 변경 시 데이터 삭제
+                    .build()
             }
+            return instance!!
         }
     }
 }

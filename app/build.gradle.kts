@@ -132,9 +132,11 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("androidx.navigation.safeargs.kotlin")
+   // id("org.jetbrains.kotlin.kapt")
+  //  id("kotlin-kapt")
 
-//    id("kotlin-kapt") // RoomDB 라이브러리를 사용하기 위해
-    //id("org.jetbrains.kotlin.kapt")    ㅗㅗㅗㅗㅗㅗ
+   // alias(libs.plugins.google.gms.google.services)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -171,7 +173,6 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
-        compose = true
         viewBinding = true
         dataBinding = true
     }
@@ -186,7 +187,6 @@ android {
 }
 
 dependencies {
-    implementation("me.relex:circleindicator:2.1.6")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -195,7 +195,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3) // 이미 추가됨
-    implementation("androidx.compose.material3:material3:1.0.0") // 추가된 부분
+    implementation("androidx.compose.material3:material3:1.0.0")
+    implementation(libs.firebase.database)  // 추가된 부분
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -212,7 +213,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx) // 추가된 부분
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-
+    implementation("androidx.core:core-splashscreen:1.0.1")
     // Paging 라이브러리 추가
     implementation("androidx.paging:paging-runtime:3.1.1")
 
@@ -255,9 +256,17 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
 
     // ROOM Database
-    val roomVersion = "2.6.1"
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
-    implementation("androidx.room:room-runtime:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
+    implementation("me.relex:circleindicator:2.1.6")
+
+
+
+    // Firebase BOM (버전 관리)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+
+    // ✅ 이 줄이 반드시 있어야 합니다!
+    implementation("com.google.firebase:firebase-auth-ktx")
 }

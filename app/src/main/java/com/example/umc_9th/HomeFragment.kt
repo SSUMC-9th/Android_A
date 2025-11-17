@@ -96,6 +96,17 @@ class HomeFragment : Fragment() {
             add(Album(4, "Boy with Luv", "방탄소년단 (BTS)", false,R.drawable.img_album_exp4))
             add(Album(5, "SUPERNOVA", "aespa", false,R.drawable.img_album_supernova))
         }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            albumDatas.forEach { album ->
+                try {
+                    songDB.albumDao().insert(album)
+                } catch (e: Exception) {
+                    // 이미 존재하면 무시
+                }
+            }
+        }
+
         albumRVAdapter = AlbumRVAdapter(albumDatas){album ->
             val song = Song(
                 0,
