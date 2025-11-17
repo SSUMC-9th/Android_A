@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
+    xmlns:tools="http://schemas.android.com/tools" >
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,18 +14,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.UMC_9th"
-        tools:targetApi="31">
-        <activity
-            android:name="com.example.umc_9th.MainActivity"
+        tools:targetApi="31" >
+        <service
+            android:name="com.example.umc_9th.MusicService"
+            android:foregroundServiceType="mediaPlayback"
+            android:enabled="true"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.UMC_9th">
+            android:permission="TODO">
+        </service>
+
+        <activity
+            android:name="com.example.umc_9th.SplashActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.umc_9th.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.UMC_9th" >
+        </activity>
+        <activity
+            android:name="com.example.umc_9th.SongActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
