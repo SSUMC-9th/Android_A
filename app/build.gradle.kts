@@ -133,17 +133,14 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("androidx.navigation.safeargs.kotlin")
     id("org.jetbrains.kotlin.kapt")
-    id("kotlin-kapt")
-    alias(libs.plugins.google.gms.google.services)
-
 }
 
 android {
-    namespace = "umc.study.umc_9th"
+    namespace = "umc.study.umc_8th"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "umc.study.umc_9th"
+        applicationId = "umc.study.umc_8th"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -173,7 +170,6 @@ android {
     }
     buildFeatures {
         compose = true
-        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -194,8 +190,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3) // 이미 추가됨
-    implementation("androidx.compose.material3:material3:1.0.0")
-    implementation(libs.firebase.database) // 추가된 부분
+    implementation("androidx.compose.material3:material3:1.0.0") // 추가된 부분
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -212,7 +207,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx) // 추가된 부분
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // Paging 라이브러리 추가
     implementation("androidx.paging:paging-runtime:3.1.1")
 
@@ -258,6 +253,4 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-
-    implementation("me.relex:circleindicator:2.1.6")
 }
