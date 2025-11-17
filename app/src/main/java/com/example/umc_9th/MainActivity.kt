@@ -110,7 +110,12 @@ class MainActivity : AppCompatActivity(), HomeFragment.OnAlbumButtonClickListene
                         .commit()
                     true
                 }
-
+                R.id.Search -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainerView, SearchFragment())
+                        .commit()
+                    true
+                }
                 R.id.Locker -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainerView, LockerFragment())
