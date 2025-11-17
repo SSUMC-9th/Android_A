@@ -21,8 +21,8 @@ import umc.study.umc_9th.databinding.ActivitySongBinding
 
 class SongActivity : AppCompatActivity() {
 
-    private val uid = "asdfqwer1234"
-    private val userSongsRef = FirebaseDatabase.getInstance().getReference("songs").child(uid)
+    private val uid: String = loginStorage(this).getUid().toString()
+    private val userSongsRef = FirebaseDatabase.getInstance().getReference(uid).child("songs")
 
     private lateinit var binding: ActivitySongBinding
     private var songID: Int = 0
