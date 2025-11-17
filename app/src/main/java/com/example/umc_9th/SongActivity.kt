@@ -10,9 +10,11 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.umc_9th.data.firebase.FirebaseManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,6 +22,11 @@ import kotlinx.coroutines.launch
 import umc.study.umc_8th.R
 
 class SongActivity : AppCompatActivity() {
+
+    private lateinit var firebaseManager: FirebaseManager
+    private var isLiked = false
+    private lateinit var btnLike: ImageButton
+
     private var isRepeatOn = false
     private var isShuffleOn = false
     private var isPlayOn = false
@@ -35,6 +42,11 @@ class SongActivity : AppCompatActivity() {
     private lateinit var btnNext: ImageButton
     private lateinit var seekBar: SeekBar
     private lateinit var currentTime: TextView
+
+    private var currentSongId = 1
+    private var currentTitle = ""
+    private var currentArtist = ""
+    private var currentAlbumResId = R.drawable.img_album_exp
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -71,12 +83,17 @@ class SongActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_song)
 
-        val title = intent.getStringExtra("title")
-        val artist = intent.getStringExtra("artist")
-        val albumResId = intent.getIntExtra("albumResId", R.drawable.btn_textbox_close)
-        findViewById<TextView>(R.id.song_title).text = title
-        findViewById<TextView>(R.id.song_artist).text = artist
-        findViewById<ImageView>(R.id.song_album_image).setImageResource(albumResId)
+        firebaseManager = FirebaseManager.getInstance()
+
+        currentSongId = intent.getIntExtra("songId", 1)
+        currentTitle = intent.getStringExtra("title") ?: "Unknown"
+        currentArtist = intent.getStringExtra("artist") ?: "Unknown"
+        currentAlbumResId = intent.getIntExtra("albumResId", R.drawable.img_album_exp)
+
+        findViewById<TextView>(R.id.song_title).text = currentTitle
+        findViewById<TextView>(R.id.song_artist).text = currentArtist
+        findViewById<ImageView>(R.id.song_album_image).setImageResource(currentAlbumResId)
+
 
         btnRepeat = findViewById(R.id.btn_repeat)
         btnShuffle = findViewById(R.id.btn_shuffle)
@@ -85,10 +102,12 @@ class SongActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btn_next)
         seekBar = findViewById(R.id.song_seekbar)
         currentTime = findViewById(R.id.current_time)
+        btnLike = findViewById(R.id.btn_like)
+        checkLikeStatus()
 
         val serviceIntent = Intent(this, MusicService::class.java).apply {
-            putExtra("songTitle", title ?: "Unknown")
-            putExtra("songArtist", artist ?: "Unknown")
+            putExtra("songTitle", currentTitle)
+            putExtra("songArtist", currentArtist)
             putExtra("isPlaying", false)
         }
         ContextCompat.startForegroundService(this, serviceIntent)
@@ -121,7 +140,6 @@ class SongActivity : AppCompatActivity() {
             } else {
                 btnPlay.setImageResource(R.drawable.nugu_btn_play_32)
                 musicService?.pause()
-                // 일시정지 시에도 현재 위치/시간 유지 표시
                 val pos = musicService?.getCurrentPosition() ?: 0
                 seekBar.progress = pos
                 currentTime.text = formatTime(pos)
@@ -141,6 +159,10 @@ class SongActivity : AppCompatActivity() {
             updateSeekBar()
         }
 
+        btnLike.setOnClickListener {
+            toggleLike()
+        }
+
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) musicService?.seekTo(progress)
@@ -151,11 +173,83 @@ class SongActivity : AppCompatActivity() {
 
         findViewById<ImageButton>(R.id.song_drop_button).setOnClickListener {
             val resultIntent = Intent()
-            resultIntent.putExtra("title", title)
-            resultIntent.putExtra("artist", artist)
-            resultIntent.putExtra("albumResId", albumResId)
+            resultIntent.putExtra("songId", currentSongId)
+            resultIntent.putExtra("title", currentTitle)
+            resultIntent.putExtra("artist", currentArtist)
+            resultIntent.putExtra("albumResId", currentAlbumResId)
             setResult(RESULT_OK, resultIntent)
             finish()
+        }
+    }
+
+    private fun checkLikeStatus() {
+        firebaseManager.checkIfLiked(currentSongId) { liked ->
+            runOnUiThread {
+                isLiked = liked
+                updateLikeButtonUI()
+            }
+        }
+    }
+
+    private fun toggleLike() {
+        val newLikeStatus = !isLiked
+
+        if (newLikeStatus) {
+            val song = createCurrentSong()
+            firebaseManager.addLikedSong(
+                song = song,
+                onSuccess = {
+                    runOnUiThread {
+                        isLiked = true
+                        updateLikeButtonUI()
+                        Toast.makeText(this, "좋아요 목록에 추가되었습니다", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onFailure = { error ->
+                    runOnUiThread {
+                        Toast.makeText(this, "오류: $error", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        } else {
+            firebaseManager.removeLikedSong(
+                songId = currentSongId,
+                onSuccess = {
+                    runOnUiThread {
+                        isLiked = false
+                        updateLikeButtonUI()
+                        Toast.makeText(this, "좋아요 목록에서 제거되었습니다", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onFailure = { error ->
+                    runOnUiThread {
+                        Toast.makeText(this, "오류: $error", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }
+    }
+
+    private fun createCurrentSong(): Song {
+        return Song(
+            id = currentSongId,
+            title = currentTitle,
+            singer = currentArtist,
+            second = 0,
+            playTime = 180000,
+            isPlaying = false,
+            music = "music_${currentTitle.lowercase()}",
+            coverImg = currentAlbumResId,
+            isLike = true,
+            albumIdx = 1
+        )
+    }
+
+    private fun updateLikeButtonUI() {
+        if (isLiked) {
+            btnLike.setImageResource(R.drawable.ic_my_like_on)
+        } else {
+            btnLike.setImageResource(R.drawable.ic_my_like_off)
         }
     }
 

@@ -16,8 +16,13 @@ data class SavedSong(
 )
 
 class SavedSongAdapter(
-    private val items: MutableList<SavedSong>,
+    private var items: MutableList<SavedSong>,
 ) : RecyclerView.Adapter<SavedSongAdapter.SongViewHolder>() {
+
+    fun updateSongs(newSongs: MutableList<SavedSong>) {
+        items = newSongs
+        notifyDataSetChanged()
+    }
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val album: ImageView = view.findViewById(R.id.savedSong_album)
