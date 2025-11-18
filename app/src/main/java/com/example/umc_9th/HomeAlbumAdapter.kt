@@ -18,9 +18,9 @@ class HomeAlbumAdapter(
             binding.itemAlbumSingerTv.text = album.singer
             binding.itemAlbumPlayImgIv.setOnClickListener {
                 // 첫 번째 곡 정보를 전달
-                if (album.songs.isNotEmpty()) {
-                    onPlayClick(album.songs[0])
-                }
+//                if (album.songs.isNotEmpty()) {
+//                    onPlayClick(album.songs[0])
+//                }
             }
         }
     }

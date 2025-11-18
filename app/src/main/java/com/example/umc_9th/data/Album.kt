@@ -1,6 +1,7 @@
 package com.example.umc_9th.data
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 //Album table Entity
@@ -14,5 +15,7 @@ data class Album (
     var isLike: Boolean = false,
     var coverImg: Int? = null,
 
+    @Ignore
     var songs: List<Song> = emptyList()
+
 )

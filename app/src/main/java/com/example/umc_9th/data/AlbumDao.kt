@@ -9,7 +9,6 @@ interface AlbumDao {
     @Insert
     fun insert(album: Album)
 
-    @Query("SELECT * FROM AlbumTable")
+    @Query("SELECT * FROM Album_table")
     fun getAlbums(): List<Album>
-
 }
