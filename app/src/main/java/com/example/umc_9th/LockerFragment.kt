@@ -1,5 +1,6 @@
 package com.example.umc_9th
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,10 @@ class LockerFragment : Fragment() {
 
         setupViewPager()
 
+        binding.lockerLoginBtn.setOnClickListener {
+            val intent = Intent(requireActivity(), LoginActivity::class.java)
+            startActivity(intent)
+        }
         return binding.root
     }
 

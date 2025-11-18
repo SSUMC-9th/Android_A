@@ -32,6 +32,14 @@
         <activity
             android:name="com.example.umc_9th.SongActivity"
             android:exported="true"/>
+
+        <activity
+            android:name="com.example.umc_9th.LoginActivity"
+            android:exported="true"/>
+        <activity
+            android:name="com.example.umc_9th.SignUpActivity"
+            android:exported="true"/>
+
     </application>
 
 </manifest>
