@@ -1,20 +1,20 @@
 package com.example.umc_9th
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_9th.data.firebase.FirebaseManager
 import umc.study.umc_8th.R
 
-
 class SavedAlbumFragment : Fragment() {
-    private var isPlayOn = false;
+
+    private lateinit var firebaseManager: FirebaseManager
+    private lateinit var adapter: SavedAlbumAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -25,17 +25,39 @@ class SavedAlbumFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        firebaseManager = FirebaseManager.getInstance()
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView_saved_albums)
 
-        val savedAlbums = mutableListOf(
-            SavedAlbum(R.drawable.img_album_exp5, "BAAM", "모모랜드"),
-            SavedAlbum(R.drawable.img_album_exp3, "Next Level", "aespa"),
-            SavedAlbum(R.drawable.img_album_exp6, "Weekend", "태연")
+        adapter = SavedAlbumAdapter(mutableListOf()) { albumId ->
+            // 삭제
+            firebaseManager.removeLikedAlbum(albumId,
+                onSuccess = { loadAlbums() },
+                onFailure = {}
+            )
+        }
 
-        )
-
-        val adapter = SavedAlbumAdapter(savedAlbums)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+
+        loadAlbums()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadAlbums()
+    }
+
+    private fun loadAlbums() {
+        firebaseManager.getLikedAlbums(
+            onSuccess = { albums ->
+                activity?.runOnUiThread {
+                    val savedAlbums = albums.map {
+                        SavedAlbum(it.id, it.albumResId, it.title, it.artist)
+                    }.toMutableList()
+                    adapter.updateAlbums(savedAlbums)
+                }
+            },
+            onFailure = {}
+        )
     }
 }

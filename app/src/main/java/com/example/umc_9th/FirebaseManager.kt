@@ -1,5 +1,6 @@
 package com.example.umc_9th.data.firebase
 
+import com.example.umc_9th.Album
 import com.google.firebase.database.*
 import com.example.umc_9th.Song
 
@@ -8,6 +9,7 @@ class FirebaseManager {
     private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val songsRef = database.child("songs")
     private val likedSongsRef = database.child("likedSongs")
+    private val likedAlbumsRef = database.child("likedAlbums")
     
     companion object {
         @Volatile
@@ -128,6 +130,64 @@ class FirebaseManager {
             }
         })
     }
+
+    // 🔥 ========== 앨범 관련 함수들 추가 ==========
+
+    // 앨범 좋아요 추가
+    fun addLikedAlbum(album: Album, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val albumData = mapOf(
+            "id" to album.id,
+            "title" to album.title,
+            "artist" to album.artist,
+            "albumResId" to album.albumResId
+        )
+
+        database.child("likedAlbums").child(album.id.toString()).setValue(albumData)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it.message ?: "오류") }
+    }
+
+    // 앨범 좋아요 제거
+    fun removeLikedAlbum(albumId: Int, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        database.child("likedAlbums").child(albumId.toString()).removeValue()
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it.message ?: "오류") }
+    }
+
+    // 앨범 좋아요 상태 확인
+    fun checkIfAlbumLiked(albumId: Int, callback: (Boolean) -> Unit) {
+        database.child("likedAlbums").child(albumId.toString())
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    callback(snapshot.exists())
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    callback(false)
+                }
+            })
+    }
+
+    // 좋아요한 앨범 목록
+    fun getLikedAlbums(onSuccess: (List<Album>) -> Unit, onFailure: (String) -> Unit) {
+        database.child("likedAlbums").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val albums = mutableListOf<Album>()
+                for (child in snapshot.children) {
+                    val id = child.child("id").getValue(Int::class.java) ?: 0
+                    val title = child.child("title").getValue(String::class.java) ?: ""
+                    val artist = child.child("artist").getValue(String::class.java) ?: ""
+                    val albumResId = child.child("albumResId").getValue(Int::class.java) ?: 0
+
+                    albums.add(Album(id, title, artist, albumResId, true))
+                }
+                onSuccess(albums)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                onFailure(error.message)
+            }
+        })
+    }
+
     
     // ===== 노래 재생 위치 저장 =====
     
