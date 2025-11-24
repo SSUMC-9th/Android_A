@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import umc.study.umc_9th.R
 import umc.study.umc_9th.databinding.FragmentAlbumBinding
 
 class AlbumFragment : Fragment() {
     private lateinit var binding : FragmentAlbumBinding
+    private lateinit var uid: String
+    private lateinit var userAlbumRef : DatabaseReference
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,7 +43,13 @@ class AlbumFragment : Fragment() {
                 else -> ""
             }
         }.attach()
-
+        uid = loginStorage(requireContext()).getUid().toString()
+        userAlbumRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("albums")
+        binding.albumLike.setOnClickListener {
+            userAlbumRef.child(binding.albumTitle.text.toString()).child("title").setValue(binding.albumTitle.text.toString())
+            userAlbumRef.child(binding.albumTitle.text.toString()).child("singer").setValue(binding.albumSinger.text.toString())
+            binding.albumLike.setImageResource(R.drawable.ic_my_like_on)
+        }
         return binding.root
     }
 
