@@ -63,8 +63,13 @@ class LoginActivity: AppCompatActivity(){
                 // 토큰 저장 (자동 로그인을 위해 SharedPreference에 저장)
                 saveLoginStatus(data.accessToken, data.memberId, data.name)
 
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+
+                finish()
+
             }.onFailure { error ->
-                val message = error.message ?: "알 수 없는 오류가 발생했습니다."
+                val message = error.message ?: "오류가 발생했습니다."
                 Log.d("tag", "로그인 실패: $message")
                 Toast.makeText(this, "로그인 실패: $message", Toast.LENGTH_LONG).show()
             }

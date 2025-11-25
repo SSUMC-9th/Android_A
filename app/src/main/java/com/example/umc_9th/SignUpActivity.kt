@@ -62,7 +62,6 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-
     //회원가입 API 결과 observe
     private fun observeSignup() {
         authViewModel.signupResult.observe(this) { result ->
