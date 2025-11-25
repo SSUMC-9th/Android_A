@@ -7,10 +7,8 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.tabs.TabLayoutMediator
 import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.FragmentHomeBinding
 
@@ -20,7 +18,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val slideHandler = Handler(Looper.getMainLooper())
-    private lateinit var slideRunnable: Runnable
+    private var slideRunnable: Runnable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,9 +52,8 @@ class HomeFragment : Fragment() {
                 title = "운동할 때 듣는 음악",
                 content = "총 8곡 2025.03.30",
                 songs = listOf(
-
                     BannerSong("해야(Heya)", "IVE", R.drawable.img_album_heya),
-                    BannerSong("supernova", "aespa", R.drawable.img_album_supernova),
+                    BannerSong("supernova", "aespa", R.drawable.img_album_supernova)
                 )
             )
         )
@@ -80,48 +77,52 @@ class HomeFragment : Fragment() {
 
         slideRunnable = object : Runnable {
             override fun run() {
+                if (_binding == null) return  // 🔥 null 체크!
+
                 val itemCount = bannerAdapter.itemCount
                 if (itemCount > 0) {
-                    val nextItem =
-                        (binding.homeTopBanner.currentItem + 1) % itemCount
+                    val nextItem = (binding.homeTopBanner.currentItem + 1) % itemCount
                     binding.homeTopBanner.setCurrentItem(nextItem, true)
                 }
                 slideHandler.postDelayed(this, 3000)
             }
         }
 
-        slideHandler.postDelayed(slideRunnable, 3000)
+        slideRunnable?.let { slideHandler.postDelayed(it, 3000) }
 
         binding.homeTopBanner.registerOnPageChangeCallback(
             object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    slideHandler.removeCallbacks(slideRunnable)
-                    slideHandler.postDelayed(slideRunnable, 3000)
+                    slideRunnable?.let {
+                        slideHandler.removeCallbacks(it)
+                        slideHandler.postDelayed(it, 3000)
+                    }
                 }
             })
 
         val albums = listOf(
-            Album("Next Level", "aespa", R.drawable.img_album_exp3),
-            Album("해야 (Heya)", "IVE", R.drawable.img_album_heya),
-            Album("Supernova", "aespa", R.drawable.img_album_supernova)
+            Album(1, "Next Level", "aespa", R.drawable.img_album_exp3),
+            Album(2, "해야 (Heya)", "IVE", R.drawable.img_album_heya),
+            Album(3, "Supernova", "aespa", R.drawable.img_album_supernova)
         )
 
         val recyclerViewAdapter = HomeAlbumAdapter(albums,
             onAlbumClick = { album ->
-            val albumFragment = AlbumFragment().apply {
-                arguments = Bundle().apply {
-                    putString("title", album.title)
-                    putString("artist", album.artist)
-                    putInt("albumResId", album.albumResId)
+                val albumFragment = AlbumFragment().apply {
+                    arguments = Bundle().apply {
+                        putInt("albumId", album.id)
+                        putString("title", album.title)
+                        putString("artist", album.artist)
+                        putInt("albumResId", album.albumResId)
+                    }
                 }
-            }
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, albumFragment)
-                .addToBackStack(null)
-                .commit()
-        },
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, albumFragment)
+                    .addToBackStack(null)
+                    .commit()
+            },
             onPlayClick = { album ->
                 (activity as? MainActivity)?.updateMiniPlayer(
                     album.title,
@@ -134,11 +135,12 @@ class HomeFragment : Fragment() {
         binding.recyclerViewAlbum.adapter = recyclerViewAdapter
         binding.recyclerViewAlbum.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        slideRunnable?.let { slideHandler.removeCallbacks(it) }
+        slideRunnable = null
         _binding = null
     }
 }

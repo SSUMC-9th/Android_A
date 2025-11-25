@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import umc.study.umc_8th.R
 
 data class Album(
+    val id: Int = 0,
     val title: String,
     val artist: String,
-    val albumResId: Int
+    val albumResId: Int,
+    var isLike: Boolean = false
 )
 
 class HomeAlbumAdapter(

@@ -10,14 +10,21 @@ import androidx.recyclerview.widget.RecyclerView
 import umc.study.umc_8th.R
 
 data class SavedAlbum(
+    val id: Int,
     val album: Int,
     val title: String,
     val artist: String
 )
 
 class SavedAlbumAdapter(
-    private val items: MutableList<SavedAlbum>,
+    private var items: MutableList<SavedAlbum>,
+    private val onDelete: (Int) -> Unit
 ) : RecyclerView.Adapter<SavedAlbumAdapter.SongViewHolder>() {
+
+    fun updateAlbums(newItems: MutableList<SavedAlbum>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val album: ImageView = view.findViewById(R.id.savedSong_album)
@@ -49,12 +56,9 @@ class SavedAlbumAdapter(
             }
         }
 
+        // 🔥 삭제 버튼
         holder.moreButton.setOnClickListener {
-            val pos = holder.bindingAdapterPosition
-            if (pos != RecyclerView.NO_POSITION) {
-                items.removeAt(pos)
-                notifyItemRemoved(pos)
-            }
+            onDelete(song.id)
         }
     }
 

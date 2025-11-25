@@ -1,7 +1,9 @@
 package com.example.umc_9th
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -18,6 +20,7 @@ class LockerFragment : Fragment(R.layout.fragment_locker) {
 
         val adapter = LockerPagerAdapter(this)
         viewPager.adapter = adapter
+        val loginBtn = view.findViewById<TextView>(R.id.locker_login)
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
@@ -26,5 +29,10 @@ class LockerFragment : Fragment(R.layout.fragment_locker) {
                 2 -> tab.text = "저장앨범"
             }
         }.attach()
+
+        loginBtn.setOnClickListener {
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
