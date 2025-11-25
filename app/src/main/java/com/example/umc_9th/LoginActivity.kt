@@ -61,7 +61,7 @@ class LoginActivity: AppCompatActivity(){
                 authViewModel.nickname = data.name
 
                 // 토큰 저장 (자동 로그인을 위해 SharedPreference에 저장)
-                saveLoginStatus(data.accessToken, data.memberId, data.name)
+                Prefs.setToken(this, data.accessToken)
 
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
@@ -91,16 +91,5 @@ class LoginActivity: AppCompatActivity(){
 
         //ViewModel에서 API 호출 -> 그 결과는 observe로 처리
         authViewModel.login(fullEmail, pw)
-    }
-
-    private fun saveLoginStatus(token: String, memberId: Int, name: String) {
-        val sharedPref = getSharedPreferences("auth", Context.MODE_PRIVATE)
-        sharedPref.edit().apply {
-            putBoolean("isLoggedIn", true)
-            putString("accessToken", token)
-            putInt("memberId", memberId)
-            putString("userName", name)
-            apply()
-        }
     }
 }
