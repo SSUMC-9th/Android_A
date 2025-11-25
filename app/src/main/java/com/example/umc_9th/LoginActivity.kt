@@ -9,6 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.umc_9th.network.NetworkManager
+import com.example.umc_9th.request.LoginRequest
+import kotlinx.coroutines.launch
 import umc.study.umc_8th.R
 
 class LoginActivity : AppCompatActivity() {
@@ -35,7 +39,6 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // 🔥 XML ID와 매칭
         emailPrefixEt = findViewById(R.id.login_email_et1)
         emailDomainEt = findViewById(R.id.login_email_et2)
         passwordEt = findViewById(R.id.login_password_et)
@@ -63,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             val emailPrefix = emailPrefixEt.text.toString().trim()
             val emailDomain = emailDomainEt.text.toString().trim()
-            val email = "$emailPrefix@$emailDomain"  // 🔥 이메일 조합
+            val email = "$emailPrefix@$emailDomain"
             val password = passwordEt.text.toString().trim()
 
             when {
@@ -88,6 +91,64 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn(email: String, password: String) {
+        lifecycleScope.launch {
+            try {
+                val request = LoginRequest(email, password)
+                val response = NetworkManager.apiService.login(request)
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body?.status == true) {
+
+                        // jwt 토큰이 없어 response 헤더에서 가져오기
+                        val token = response.headers()["Authorization"] ?: ""
+
+
+                        if (token.isNotEmpty()) {
+                            authManager.saveAccessToken(token)
+                            authManager.saveUserToPrefs("unknown", email)  // userIdx가 없음
+
+                            Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+
+                            // Test API 호출
+                            testApi(token)
+
+                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                            finish()
+                        } else {
+                            Toast.makeText(this@LoginActivity, "토큰을 받지 못했습니다", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this@LoginActivity, "로그인 실패: ${body?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@LoginActivity, "서버 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@LoginActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun testApi(token: String) {
+        lifecycleScope.launch {
+            try {
+                val response = NetworkManager.apiService.test("Bearer $token")
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body?.status == true) {
+                        Toast.makeText(this@LoginActivity, "Test API: ${body.data?.result}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                // 실패해도 무시
+            }
+        }
+    }
+
+    /*
+    private fun signIn(email: String, password: String) {
         authManager.signIn(
             email = email,
             password = password,
@@ -101,4 +162,5 @@ class LoginActivity : AppCompatActivity() {
             }
         )
     }
+     */
 }

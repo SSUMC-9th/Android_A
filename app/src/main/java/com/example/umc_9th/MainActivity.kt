@@ -21,7 +21,6 @@ import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.ActivityMainBinding
 
 class SearchFragment : Fragment(R.layout.fragment_search)
-class LibraryFragment : Fragment(R.layout.fragment_locker)
 
 class MainActivity : AppCompatActivity() {
 
