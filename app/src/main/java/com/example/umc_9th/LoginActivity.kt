@@ -2,8 +2,10 @@ package com.example.umc_9th
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +19,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEt: EditText
     private lateinit var loginBtn: Button
     private lateinit var toSignUpTv: TextView
+    private lateinit var passwordToggle: ImageView
+    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +39,26 @@ class LoginActivity : AppCompatActivity() {
         emailPrefixEt = findViewById(R.id.login_email_et1)
         emailDomainEt = findViewById(R.id.login_email_et2)
         passwordEt = findViewById(R.id.login_password_et)
+        passwordToggle = findViewById(R.id.login_password_toggle)
         loginBtn = findViewById(R.id.login_btn)
         toSignUpTv = findViewById(R.id.login_to_signup_tv)
+
+        passwordToggle.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) {
+                // 비밀번호 보이기
+                passwordEt.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                passwordToggle.setImageResource(R.drawable.btn_input_password_off)
+            } else {
+                // 비밀번호 숨기기
+                passwordEt.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                passwordToggle.setImageResource(R.drawable.btn_input_password)
+            }
+            //passwordEt.setSelection(passwordEt.text.length)
+        }
 
         loginBtn.setOnClickListener {
             val emailPrefix = emailPrefixEt.text.toString().trim()

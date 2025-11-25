@@ -38,9 +38,18 @@ class MusicService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
 
-        intent?.getStringExtra("songTitle")?.let { currentTitle = it }
-        intent?.getStringExtra("songArtist")?.let { currentArtist = it }
-        currentAlbumResId = intent?.getIntExtra("albumResId", currentAlbumResId) ?: currentAlbumResId
+        if (intent == null) {
+            startForeground(NOTI_ID, createNotification())
+            return START_STICKY
+        }
+
+        val newTitle = intent.getStringExtra("songTitle")
+        val newArtist = intent.getStringExtra("songArtist")
+        val newAlbumResId = intent.getIntExtra("albumResId", currentAlbumResId)
+
+        if (newTitle != null) currentTitle = newTitle
+        if (newArtist != null) currentArtist = newArtist
+        if (newAlbumResId != 0) currentAlbumResId = newAlbumResId
 
         val resId = when {
             currentTitle.contains("Next Level", true) -> R.raw.next_level
@@ -56,21 +65,25 @@ class MusicService : Service() {
             else -> 0
         }
 
-        if (mediaPlayer == null || mediaPlayer?.isPlaying == false) {
+        val shouldPlay = intent.getBooleanExtra("isPlaying", false)
+
+        if (shouldPlay) {
+            mediaPlayer?.stop()
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer.create(this, resId)
             mediaPlayer?.setOnCompletionListener { playNext() }
+            mediaPlayer?.start()
+            isPlayingState = true
+        } else {
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(this, resId)
+                mediaPlayer?.setOnCompletionListener { playNext() }
+            }
         }
 
         startForeground(NOTI_ID, createNotification())
-
-        if (intent?.getBooleanExtra("isPlaying", false) == true) {
-            play()
-        }
-
         return START_STICKY
     }
-
     override fun onBind(intent: Intent): IBinder = binder
 
     private fun createNotificationChannel() {
@@ -131,6 +144,23 @@ class MusicService : Service() {
     }
 
     private fun playCurrentSong() {
+        when (currentIndex) {
+            0 -> {
+                currentTitle = "Next Level"
+                currentArtist = "aespa"
+                currentAlbumResId = R.drawable.img_album_exp3
+            }
+            1 -> {
+                currentTitle = "해야"
+                currentArtist = "IVE"
+                currentAlbumResId = R.drawable.img_album_heya
+            }
+            2 -> {
+                currentTitle = "Supernova"
+                currentArtist = "aespa"
+                currentAlbumResId = R.drawable.img_album_supernova
+            }
+        }
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null

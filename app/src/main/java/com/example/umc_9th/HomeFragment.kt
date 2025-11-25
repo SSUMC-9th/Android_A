@@ -7,6 +7,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import umc.study.umc_8th.R
@@ -31,6 +32,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 배너는 아직 db연동 X 하드코딩으로
         val banners = listOf(
             BannerData(
                 title = "달빛의 감성 산책",
@@ -77,7 +79,7 @@ class HomeFragment : Fragment() {
 
         slideRunnable = object : Runnable {
             override fun run() {
-                if (_binding == null) return  // 🔥 null 체크!
+                if (_binding == null) return
 
                 val itemCount = bannerAdapter.itemCount
                 if (itemCount > 0) {
@@ -124,11 +126,13 @@ class HomeFragment : Fragment() {
                     .commit()
             },
             onPlayClick = { album ->
-                (activity as? MainActivity)?.updateMiniPlayer(
-                    album.title,
-                    album.artist,
-                    album.albumResId
-                )
+                val serviceIntent = Intent(requireContext(), MusicService::class.java).apply {
+                    putExtra("songTitle", album.title)
+                    putExtra("songArtist", album.artist)
+                    putExtra("albumResId", album.albumResId)
+                    putExtra("isPlaying", true)  // 자동 재생
+                }
+                ContextCompat.startForegroundService(requireContext(), serviceIntent)
             }
         )
 

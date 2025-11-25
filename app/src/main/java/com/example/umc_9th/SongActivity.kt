@@ -108,6 +108,7 @@ class SongActivity : AppCompatActivity() {
         val serviceIntent = Intent(this, MusicService::class.java).apply {
             putExtra("songTitle", currentTitle)
             putExtra("songArtist", currentArtist)
+            putExtra("albumResId", currentAlbumResId)
             putExtra("isPlaying", false)
         }
         ContextCompat.startForegroundService(this, serviceIntent)
@@ -150,12 +151,14 @@ class SongActivity : AppCompatActivity() {
             musicService?.playNext()
             btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
             isPlayOn = true
+            updateSongInfo()
             updateSeekBar()
         }
         btnPrev.setOnClickListener {
             musicService?.playPrev()
             btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
             isPlayOn = true
+            updateSongInfo()
             updateSeekBar()
         }
 
@@ -179,6 +182,19 @@ class SongActivity : AppCompatActivity() {
             resultIntent.putExtra("albumResId", currentAlbumResId)
             setResult(RESULT_OK, resultIntent)
             finish()
+        }
+    }
+
+    private fun updateSongInfo() {
+        musicService?.let { service ->
+            val (title, artist, albumResId) = service.getCurrentSongInfo()
+            findViewById<TextView>(R.id.song_title).text = title
+            findViewById<TextView>(R.id.song_artist).text = artist
+            findViewById<ImageView>(R.id.song_album_image).setImageResource(albumResId ?: R.drawable.img_album_exp)
+
+            currentTitle = title ?: ""
+            currentArtist = artist ?: ""
+            currentAlbumResId = albumResId ?: R.drawable.img_album_exp
         }
     }
 
