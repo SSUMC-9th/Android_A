@@ -1,5 +1,6 @@
 package com.example.umc_9th
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,13 +34,42 @@ class LockerFragment : Fragment() {
 
         setupViewPager()
 
-        binding.lockerLoginBtn.setOnClickListener {
+        binding.tvLockerLogin.setOnClickListener {
             val intent = Intent(requireActivity(), LoginActivity::class.java)
             startActivity(intent)
         }
+
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        val token = Prefs.getToken(requireActivity())
+
+        if (token.isNotEmpty()) {
+            binding.tvLockerLogin.text = "로그아웃"
+
+            binding.tvLockerLogin.setOnClickListener {
+                logout()
+            }
+        } else {
+            binding.tvLockerLogin.text = "로그인"
+
+            binding.tvLockerLogin.setOnClickListener {
+                startActivity(Intent(requireActivity(), LoginActivity::class.java))
+            }
+        }
+    }
+
+    private fun logout() {
+        Prefs.clearToken(requireActivity())
+        binding.tvLockerLogin.text = "로그인"
+
+        binding.tvLockerLogin.setOnClickListener {
+            startActivity(Intent(requireActivity(), LoginActivity::class.java))
+        }
+    }
 
     private fun setupViewPager() {
         val lockerAdapter = LockerVPAdapter(this)

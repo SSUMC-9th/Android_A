@@ -1,13 +1,12 @@
+
 package com.example.umc_9th
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_9th.data.Song
 import umc.study.umc_8th.databinding.ItemSongsBinding
 
-class SongsRVAdapter(private val songList: ArrayList<Song>) :
-    RecyclerView.Adapter<SongsRVAdapter.ViewHolder>(){
+class SongsRVAdapter(private val songsList: ArrayList<Songs>) : RecyclerView.Adapter<SongsRVAdapter.ViewHolder>(){
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -17,17 +16,17 @@ class SongsRVAdapter(private val songList: ArrayList<Song>) :
     }
 
     override fun onBindViewHolder(holder: SongsRVAdapter.ViewHolder, position: Int) {
-        holder.bind(songList[position], position)
+        holder.bind(songsList[position])
     }
 
-    override fun getItemCount(): Int = songList.size
+    override fun getItemCount(): Int = songsList.size
 
     inner class ViewHolder(val binding: ItemSongsBinding):
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(song: Song, position: Int) {
-            binding.itemSongsNumberTv.text = (position + 1).toString()
-            binding.itemSongsTitleTv.text = song.title
-            binding.itemSongsSingerTv.text = song.singer
+        fun bind(songs: Songs) {
+            binding.itemSongsNumberTv.text = songs.number.toString()
+            binding.itemSongsTitleTv.text = songs.title
+            binding.itemSongsSingerTv.text = songs.singer
         }
     }
 }

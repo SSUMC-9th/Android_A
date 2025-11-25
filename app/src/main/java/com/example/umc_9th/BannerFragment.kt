@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import umc.study.umc_8th.databinding.FragmentBannerBinding
 
-class BannerFragment(val imgRes : Int) : Fragment() {
+class BannerFragment() : Fragment() {
     lateinit var binding : FragmentBannerBinding
 
     override fun onCreateView(
@@ -16,7 +16,11 @@ class BannerFragment(val imgRes : Int) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBannerBinding.inflate(inflater, container, false)
-        binding.bannerImageIv.setImageResource(imgRes)
+        val imgRes = arguments?.getInt("imgRes")
+
+        if (imgRes != null) {
+            binding.bannerImageIv.setImageResource(imgRes)
+        }
 
         return binding.root
     }

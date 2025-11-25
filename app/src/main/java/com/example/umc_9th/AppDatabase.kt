@@ -9,7 +9,7 @@ import com.example.umc_9th.data.AlbumDao
 import com.example.umc_9th.data.Song
 import com.example.umc_9th.data.SongDao
 
-@Database(entities = [Song::class, Album::class], version = 1, exportSchema = false)
+@Database(entities = [Song::class, Album::class,], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
     abstract fun albumDao(): AlbumDao
