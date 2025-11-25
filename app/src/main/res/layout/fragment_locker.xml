@@ -7,7 +7,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <TextView
-            android:id="@+id/locker_title_tv"
+            android:id="@+id/tv_locker_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -20,15 +20,15 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/locker_login_btn"
+            android:id="@+id/tv_locker_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="25dp"
             android:text="로그인"
             android:textSize="17dp"
             android:textColor="#4A46FF"
-            app:layout_constraintTop_toTopOf="@+id/locker_title_tv"
-            app:layout_constraintBottom_toBottomOf="@+id/locker_title_tv"
+            app:layout_constraintTop_toTopOf="@+id/tv_locker_title"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_locker_title"
             app:layout_constraintEnd_toEndOf="parent"
             />
 
@@ -39,9 +39,9 @@
             app:tabSelectedTextColor="#3f3fff"
             app:tabIndicatorColor="#3f3fff"
             app:tabRippleColor="#00ff0000"
-            app:layout_constraintTop_toBottomOf="@id/locker_title_tv"
-            app:layout_constraintStart_toStartOf="@id/locker_title_tv"
-            app:layout_constraintEnd_toEndOf="@id/locker_title_tv"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_locker_title"
+            app:layout_constraintStart_toStartOf="@id/tv_locker_title"
+            app:layout_constraintEnd_toEndOf="@id/tv_locker_title"/>
 
 
         <androidx.viewpager2.widget.ViewPager2

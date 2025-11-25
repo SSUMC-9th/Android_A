@@ -11,4 +11,10 @@ interface AlbumDao {
 
     @Query("SELECT * FROM Album_table")
     fun getAlbums(): List<Album>
+
+    @Query("UPDATE album_table SET isLike = :isLike WHERE id = :id")
+    fun updateIsLike(id: Int, isLike: Boolean): Int
+
+    @Query("SELECT * FROM album_table WHERE isLike = 1")
+    fun getLikedAlbums(): List<Album>
 }

@@ -44,6 +44,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val savedToken = Prefs.getToken(this)
+
+        if (savedToken.isNotEmpty()){
+            Toast.makeText(this, "자동 로그인: $savedToken", Toast.LENGTH_SHORT).show()
+        }
+
         songDB = AppDatabase.getInstance(this)
 
         initNavigation()

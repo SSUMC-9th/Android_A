@@ -26,9 +26,6 @@ class HomeFragment : Fragment() {
     private lateinit var albumRVAdapter: AlbumRVAdapter
     private var albumDatas = ArrayList<Album>()
 
-    private var songList = emptyList<Song>()
-    private lateinit var songDB: AppDatabase
-
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private val autoScrollRunnable = object : Runnable {
         override fun run() {
@@ -49,10 +46,31 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        songDB = AppDatabase.getInstance(requireContext())
 
-        setupAlbumRV()
-        loadSongsFromDB()
+        // 데이터 리스트 생성 더미 데이터
+        albumDatas.apply {
+            add(Album(0, "LILAC", "아이유 (IU)", false,R.drawable.img_album_exp2))
+            add(Album(1, "Butter", "방탄소년단 (BTS)", false,R.drawable.img_album_exp))
+            add(Album(2, "Next Level", "aespa", false,R.drawable.img_album_exp3))
+            add(Album(3, "Drama", "aespa", false,R.drawable.img_album_drama))
+            add(Album(4, "Boy with Luv", "방탄소년단 (BTS)", false,R.drawable.img_album_exp4))
+            add(Album(5, "SUPERNOVA", "aespa", false,R.drawable.img_album_supernova))
+        }
+
+        // Adapter 초기화 (플레이 버튼 클릭 시 MainActivity의 미니플레이어 업데이트)
+        albumRVAdapter = AlbumRVAdapter(albumDatas) { album ->
+            val song = Song(
+                0,
+                album.title,
+                album.singer,
+                0,
+                215, // 예시: 기본 재생 시간
+                true,
+                R.raw.song_sample
+            )
+
+            (activity as? MainActivity)?.updateMiniPlayer(song)
+        }
 
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
         binding.homeTodayMusicAlbumRv.layoutManager =
@@ -68,15 +86,15 @@ class HomeFragment : Fragment() {
             }
         })
         val mainBannerAdapter = BannerVPAdapter(this)
-        mainBannerAdapter.addFragment(BannerFragment(R.drawable.img_first_album_default))
-        mainBannerAdapter.addFragment(BannerFragment(R.drawable.img_album_supernova))
+        mainBannerAdapter.addFragment(R.drawable.img_first_album_default)
+        mainBannerAdapter.addFragment(R.drawable.img_album_supernova)
         binding.homeMainBannerVp.adapter = mainBannerAdapter
         binding.homeMainBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         // 배너어댑터
         val bannerAdapter = BannerVPAdapter(this)
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
+        bannerAdapter.addFragment(R.drawable.img_home_viewpager_exp)
+        bannerAdapter.addFragment(R.drawable.img_home_viewpager_exp2)
         binding.homeBannerVp.adapter = bannerAdapter
         binding.homeBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
@@ -86,69 +104,16 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    private fun setupAlbumRV(){
-    // 데이터 리스트 생성 더미 데이터
-        albumDatas.apply {
-            add(Album(0,"LILAC", "아이유 (IU)", false, R.drawable.img_album_exp2))
-            add(Album(1, "Butter", "방탄소년단 (BTS)", false, R.drawable.img_album_exp))
-            add(Album(2, "Next Level", "aespa", false, R.drawable.img_album_exp3))
-            add(Album(3, "Drama", "aespa", false,R.drawable.img_album_drama))
-            add(Album(4, "Boy with Luv", "방탄소년단 (BTS)", false,R.drawable.img_album_exp4))
-            add(Album(5, "SUPERNOVA", "aespa", false,R.drawable.img_album_supernova))
-        }
-        albumRVAdapter = AlbumRVAdapter(albumDatas){album ->
-            val song = Song(
-                0,
-                album.title,
-                album.singer,
-                0,
-                215,
-                true,
-                R.raw.song_sample,
-                album.coverImg,
-                false,
-                0
-            )
-            (activity as? MainActivity)?.updateMiniPlayer(song)
-        }
-        binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
-    }
-
-    // DB에서 데이터를 로드하는 함수
-    private fun loadSongsFromDB() {
-        lifecycleScope.launch(Dispatchers.IO){
-            songList = songDB.songDao().getAllSongs()
-            withContext(Dispatchers.Main) {
-                Log.d("HomeFragment", "loadSongs: $songList")
-            }
-        }
-    }
-
-    // 자동 스크롤 생명주기 관리 (메모리 누수 방지)
-    override fun onResume() {
-        super.onResume()
-        // 화면이 다시 보일 때 3초 뒤 자동 스크롤 시작
-        autoScrollHandler.postDelayed(autoScrollRunnable, 3000)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        // 화면이 보이지 않을 때 자동 스크롤 작업 모두 제거
-        autoScrollHandler.removeCallbacks(autoScrollRunnable)
-    }
-
-
     // 앨범 클릭 시 상세 페이지로 이동
     private fun changeAlbumFragment(album: Album) {
-        val gson = Gson()
-        val albumJson = gson.toJson(album)
-
-        // 1. Bundle을 만듭니다.
-        val bundle = Bundle().apply {
-            putString("album", albumJson)
-        }
-
-        // 2. NavController로 이동합니다. (nav_graph.xml에 정의된 actionId 사용)
-        findNavController().navigate(R.id.nav_graph, bundle)
+        (context as MainActivity).supportFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, AlbumFragment().apply {
+                arguments = Bundle().apply {
+                    val gson = Gson()
+                    val albumJson = gson.toJson(album)
+                    putString("album", albumJson)
+                }
+            })
+            .commitAllowingStateLoss()
     }
 }
