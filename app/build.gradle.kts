@@ -1,3 +1,5 @@
+import java.util.Properties
+
 //plugins {
 //    alias(libs.plugins.android.application)
 //    alias(libs.plugins.jetbrains.kotlin.android)
@@ -148,11 +150,16 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String", "KAKAO_NATIVE_API", "\"${properties.getProperty("KAKAO_NATIVE_API")}\"")
+        buildConfigField("String", "KAKAO_REST_API", "\"${properties.getProperty("KAKAO_REST_API")}\"")
+        buildConfigField("String", "KAKAO_ADMIN_API", "\"${properties.getProperty("KAKAO_ADMIN_API")}\"")
+        manifestPlaceholders.put("KAKAO_NATIVE_API", properties.getProperty("KAKAO_NATIVE_API"))
     }
 
     buildTypes {
@@ -174,6 +181,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -260,4 +268,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("me.relex:circleindicator:2.1.6")
+
+    implementation("com.kakao.sdk:v2-user:2.23.0")
+    implementation("com.kakao.sdk:v2-share:2.23.0")
+    implementation("com.kakao.sdk:v2-cert:2.23.0")
+    implementation("com.kakao.sdk:v2-auth:2.13.0")
 }
