@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<!--    9장-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,18 +15,52 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.UMC_9th"
-        tools:targetApi="31">
+        tools:targetApi="31"
+
+        android:usesCleartextTraffic="true"
+
+        android:name="com.example.umc_9th.GlobalApplication">
+
         <activity
-            android:name="com.example.umc_9th.MainActivity"
+            android:name="com.example.umc_9th.ui.splash.SplashActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.UMC_9th">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.example.umc_9th.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.UMC_9th">
+        </activity>
+
+        <activity
+            android:name="com.example.umc_9th.SongActivity"
+            android:exported="true"/>
+
+        <activity
+            android:name="com.example.umc_9th.LoginActivity"
+            android:exported="true"/>
+        <activity
+            android:name="com.example.umc_9th.SignUpActivity"
+            android:exported="true"/>
+
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="oauth"
+                    android:scheme="kakako42efdf23528e21d70ba7125ea564fde3" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
