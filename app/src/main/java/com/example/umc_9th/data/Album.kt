@@ -17,5 +17,4 @@ data class Album (
 
     @Ignore
     var songs: List<Song> = emptyList()
-
 )

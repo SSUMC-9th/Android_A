@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.ActivityMainBinding
 
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
