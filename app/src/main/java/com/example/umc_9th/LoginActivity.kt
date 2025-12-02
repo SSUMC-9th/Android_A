@@ -3,8 +3,10 @@ package com.example.umc_9th
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -12,6 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.umc_9th.network.NetworkManager
 import com.example.umc_9th.request.LoginRequest
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.launch
 import umc.study.umc_8th.R
 
@@ -22,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var emailDomainEt: EditText
     private lateinit var passwordEt: EditText
     private lateinit var loginBtn: Button
+    private lateinit var kakaoLoginBtn: ImageView
     private lateinit var toSignUpTv: TextView
     private lateinit var passwordToggle: ImageView
     private var isPasswordVisible = false
@@ -44,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
         passwordEt = findViewById(R.id.login_password_et)
         passwordToggle = findViewById(R.id.login_password_toggle)
         loginBtn = findViewById(R.id.login_btn)
+        kakaoLoginBtn = findViewById(R.id.login_kakao_btn)
         toSignUpTv = findViewById(R.id.login_to_signup_tv)
 
         passwordToggle.setOnClickListener {
@@ -85,8 +93,82 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        kakaoLoginBtn.setOnClickListener {
+            kakaoLogin()
+        }
+
         toSignUpTv.setOnClickListener {
             startActivity(Intent(this, SignUpActivity::class.java))
+        }
+    }
+
+    private fun kakaoLogin() {
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e("KakaoLogin", "로그인 실패", error)
+                Toast.makeText(this, "카카오 로그인 실패: ${error.message}", Toast.LENGTH_SHORT).show()
+            } else if (token != null) {
+                Log.i("KakaoLogin", "로그인 성공 ${token.accessToken}")
+
+                // 🔥 사용자 정보 가져오기
+                getUserInfo()
+            }
+        }
+
+        // 카카오톡 설치 확인
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+            // 카카오톡으로 로그인
+            UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
+                if (error != null) {
+                    Log.e("KakaoLogin", "카카오톡 로그인 실패", error)
+
+                    // 사용자가 취소한 경우
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        return@loginWithKakaoTalk
+                    }
+
+                    // 카카오톡 로그인 실패 시 카카오 계정으로 로그인
+                    UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+                } else if (token != null) {
+                    Log.i("KakaoLogin", "카카오톡 로그인 성공 ${token.accessToken}")
+                    getUserInfo()
+                }
+            }
+        } else {
+            // 카카오 계정으로 로그인
+            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+        }
+    }
+
+    // 🔥 카카오 사용자 정보 가져오기
+    private fun getUserInfo() {
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e("KakaoLogin", "사용자 정보 요청 실패", error)
+                Toast.makeText(this, "사용자 정보 가져오기 실패", Toast.LENGTH_SHORT).show()
+            } else if (user != null) {
+                Log.i("KakaoLogin", "사용자 정보 요청 성공" +
+                        "\n회원번호: ${user.id}" +
+                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}" +
+                        "\n이메일: ${user.kakaoAccount?.email}")
+
+                // 🔥 사용자 정보 저장
+                val userId = user.id.toString()
+                val email = user.kakaoAccount?.email ?: ""
+                val nickname = user.kakaoAccount?.profile?.nickname ?: ""
+                val profileImage = user.kakaoAccount?.profile?.thumbnailImageUrl ?: ""
+
+                // SharedPreferences에 저장
+                authManager.saveUserToPrefs(userId, email)
+                authManager.saveKakaoUserInfo(nickname, profileImage)
+
+                Toast.makeText(this, "카카오 로그인 성공!\n닉네임: $nickname", Toast.LENGTH_SHORT).show()
+
+                // MainActivity로 이동
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
         }
     }
 

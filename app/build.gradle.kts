@@ -1,3 +1,5 @@
+import java.util.Properties
+
 //plugins {
 //    alias(libs.plugins.android.application)
 //    alias(libs.plugins.jetbrains.kotlin.android)
@@ -132,7 +134,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("androidx.navigation.safeargs.kotlin")
-    id("org.jetbrains.kotlin.kapt")
+    //id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
 }
 
@@ -140,14 +142,24 @@ android {
     namespace = "umc.study.umc_8th"
     compileSdk = 34
 
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+
     defaultConfig {
         applicationId = "umc.study.umc_8th"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // 🔥 BuildConfig에 카카오 키 추가
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY")}\"")
+
+        // 🔥 Manifest에서 사용할 수 있도록 추가
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = properties.getProperty("KAKAO_NATIVE_APP_KEY")
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -171,7 +183,9 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
         viewBinding = true
+        dataBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -274,4 +288,7 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+    // 카카오 로그인
+    implementation("com.kakao.sdk:v2-user:2.19.0")
 }
