@@ -7,7 +7,7 @@ import com.google.firebase.auth.FirebaseUser
 
 class AuthManager private constructor(context: Context) {
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    //private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val prefs: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
     companion object {
@@ -21,6 +21,7 @@ class AuthManager private constructor(context: Context) {
         }
     }
 
+    /*
     // 회원가입
     fun signUp(
         email: String,
@@ -64,25 +65,34 @@ class AuthManager private constructor(context: Context) {
                 onFailure(exception.message ?: "알 수 없는 오류")
             }
     }
-
-    // 로그아웃
-    fun signOut() {
-        auth.signOut()
-        clearUserPrefs()
-    }
-
     // 현재 로그인된 사용자
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }
+     */
+
+    // 로그아웃
+    fun signOut() {
+        prefs.edit().clear().apply()
+    }
 
     // 로그인 상태 확인
     fun isLoggedIn(): Boolean {
-        return auth.currentUser != null
+        return prefs.getBoolean("is_logged_in", false)
     }
 
-    // SharedPreferences에 유저 정보 저장
-    private fun saveUserToPrefs(userId: String, email: String) {
+    // 🔥 Access Token 저장
+    fun saveAccessToken(token: String) {
+        prefs.edit().putString("access_token", token).apply()
+    }
+
+    // 🔥 Access Token 가져오기
+    fun getAccessToken(): String? {
+        return prefs.getString("access_token", null)
+    }
+
+    // 🔥 유저 정보 저장
+    fun saveUserToPrefs(userId: String, email: String) {
         prefs.edit().apply {
             putString("user_id", userId)
             putString("user_email", email)
@@ -91,17 +101,12 @@ class AuthManager private constructor(context: Context) {
         }
     }
 
-    // SharedPreferences에서 유저 정보 가져오기
+    // 🔥 유저 정보 가져오기
     fun getUserId(): String? {
         return prefs.getString("user_id", null)
     }
 
     fun getUserEmail(): String? {
         return prefs.getString("user_email", null)
-    }
-
-    // SharedPreferences 초기화
-    private fun clearUserPrefs() {
-        prefs.edit().clear().apply()
     }
 }

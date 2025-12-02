@@ -20,37 +20,18 @@ import kotlinx.coroutines.launch
 import umc.study.umc_8th.R
 import umc.study.umc_8th.databinding.ActivityMainBinding
 
-class ExploreFragment : Fragment(R.layout.fragment_explore)
 class SearchFragment : Fragment(R.layout.fragment_search)
-class LibraryFragment : Fragment(R.layout.fragment_locker)
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
     private var musicService: MusicService? = null
-    private var isBound = false
-    private var updateJob: Job? = null
-    private lateinit var miniSeekBar: SeekBar
+    private var isBound = false // 서비스 연결 여부
+    private var updateJob: Job? = null // seekbar 초당 2번(0.5초마다 업데이트 위한 Job)
 
-    val songActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val title = result.data?.getStringExtra("title")
-            val artist = result.data?.getStringExtra("artist")
-            val albumResId = result.data?.getIntExtra("albumResId", R.drawable.btn_textbox_close)
-
-            binding.miniPlayerTitle.text = title
-            binding.miniPlayerArtist.text = artist
-            albumResId?.let {
-                binding.miniPlayerAlbum.setImageResource(it)
-                binding.miniPlayerAlbum.tag = it
-            }
-            // 서비스 상태로 한 번 더 동기화
-            if (isBound) refreshFromService()
-        }
-    }
+    // SongActivity에서 돌아올 때 노래 제목, 가수명, 앨범 이미지 전달하는 건 액티비티 간 데이터 전달하는 로직 대신에
+    // Songactivity에서 service 에 넣어서 main에서 받아쓰는 로직으로 수정
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -63,10 +44,10 @@ class MainActivity : AppCompatActivity() {
             artist?.let { binding.miniPlayerArtist.text = it }
             albumResId?.let { binding.miniPlayerAlbum.setImageResource(it) }
 
-            // 재생 상태/위치 즉시 반영 (일시정지 포함)
+            // 서비스 처음 연결된 순간 재생 상태, 위치 반영
             val playback = musicService!!.getCurrentPlaybackStatus()
-            miniSeekBar.max = playback["duration"] as Int
-            miniSeekBar.progress = playback["position"] as Int
+            binding.miniSeekbar.max = playback["duration"] as Int
+            binding.miniSeekbar.progress = playback["position"] as Int
             val playing = playback["isPlaying"] as Boolean
             if (playing) {
                 binding.miniPlayerPlayButton.setImageResource(R.drawable.nugu_btn_pause_32)
@@ -74,7 +55,14 @@ class MainActivity : AppCompatActivity() {
                 binding.miniPlayerPlayButton.setImageResource(R.drawable.btn_miniplayer_play)
             }
 
-            initMiniSeekBar()
+            updateJob?.cancel()
+            updateJob = lifecycleScope.launch(Dispatchers.Main) {
+                while (isBound) {
+                    binding.miniSeekbar.progress = musicService?.getCurrentPosition() ?: 0
+                    refreshFromService()
+                    delay(500)
+                }
+            }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -87,12 +75,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        miniSeekBar = findViewById(R.id.mini_seekbar)
         val serviceIntent = Intent(this, MusicService::class.java)
         ContextCompat.startForegroundService(this, serviceIntent)
         bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
 
-        miniSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.miniSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) musicService?.seekTo(progress)
             }
@@ -109,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.bottom_homeButton -> HomeFragment()
-                R.id.bottom_lookButton -> ExploreFragment()
+                R.id.bottom_lookButton -> LookFragment()
                 R.id.bottom_searchButton -> SearchFragment()
                 R.id.bottom_lockerButton -> LockerFragment()
                 else -> HomeFragment()
@@ -142,16 +129,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.gotoSong.setOnClickListener {
-            val title = binding.miniPlayerTitle.text.toString()
-            val artist = binding.miniPlayerArtist.text.toString()
-            val albumResId = binding.miniPlayerAlbum.tag as? Int
+            musicService?.let { service ->
+                val (title, artist, albumResId) = service.getCurrentSongInfo()
 
-            val intent = Intent(this, SongActivity::class.java).apply {
-                putExtra("title", title)
-                putExtra("artist", artist)
-                putExtra("albumResId", albumResId)
+                //SongActivity로 넘길 때 연동되도록 제목 가수명 이미지는 intent에 데이터 넣어놓기
+                val intent = Intent(this, SongActivity::class.java).apply {
+                    putExtra("title", title ?: "Unknown")
+                    putExtra("artist", artist ?: "Unknown")
+                    putExtra("albumResId", albumResId ?: R.drawable.img_album_exp)
+                    // SongId도 필요하면 추가 (좋아요 기능 때문에)
+                    // putExtra("songId", currentSongId)
+                }
+                startActivity(intent)
             }
-            songActivityLauncher.launch(intent)
         }
     }
 
@@ -160,30 +150,7 @@ class MainActivity : AppCompatActivity() {
         if (isBound) refreshFromService()
     }
 
-    fun updateMiniPlayer(title: String, artist: String, albumResId: Int) {
-        binding.miniPlayerTitle.text = title
-        binding.miniPlayerArtist.text = artist
-        binding.miniPlayerAlbum.setImageResource(albumResId)
-        binding.miniPlayerAlbum.tag = albumResId
-    }
-
-    private fun initMiniSeekBar() {
-        miniSeekBar.max = musicService?.getDuration() ?: 0
-        updateMiniSeekBar()
-    }
-
-    private fun updateMiniSeekBar() {
-        updateJob?.cancel()
-        updateJob = lifecycleScope.launch(Dispatchers.Main) {
-            while (isBound) {
-                // ★ 재생 중 조건 제거: 일시정지여도 현재 위치 유지 표시
-                val pos = musicService?.getCurrentPosition() ?: 0
-                miniSeekBar.progress = pos
-                delay(500)
-            }
-        }
-    }
-
+    // 0.5초마다 반복: Service 데이터로부터 곡 정보(제목, 가수명, 이미지), seekbar, 재생/일시정지 버튼 업데이트
     private fun refreshFromService() {
         val info = musicService?.getCurrentSongInfo() ?: return
         val play = musicService?.getCurrentPlaybackStatus() ?: return
@@ -192,8 +159,8 @@ class MainActivity : AppCompatActivity() {
         info.second?.let { binding.miniPlayerArtist.text = it }
         info.third?.let { binding.miniPlayerAlbum.setImageResource(it) }
 
-        miniSeekBar.max = play["duration"] as Int
-        miniSeekBar.progress = play["position"] as Int
+        binding.miniSeekbar.max = play["duration"] as Int
+        binding.miniSeekbar.progress = play["position"] as Int
 
         val playing = play["isPlaying"] as Boolean
         if (playing) {
