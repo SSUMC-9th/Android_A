@@ -109,4 +109,27 @@ class AuthManager private constructor(context: Context) {
     fun getUserEmail(): String? {
         return prefs.getString("user_email", null)
     }
+
+    // 🔥 카카오 사용자 정보 저장
+    fun saveKakaoUserInfo(nickname: String, profileImage: String) {
+        prefs.edit().apply {
+            putString("kakao_nickname", nickname)
+            putString("kakao_profile_image", profileImage)
+            putBoolean("is_kakao_login", true)
+            apply()
+        }
+    }
+
+    // 🔥 카카오 사용자 정보 가져오기
+    fun getKakaoNickname(): String? {
+        return prefs.getString("kakao_nickname", null)
+    }
+
+    fun getKakaoProfileImage(): String? {
+        return prefs.getString("kakao_profile_image", null)
+    }
+
+    fun isKakaoLogin(): Boolean {
+        return prefs.getBoolean("is_kakao_login", false)
+    }
 }
